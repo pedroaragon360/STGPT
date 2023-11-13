@@ -53,7 +53,7 @@ if uploaded_file is not None:
         file_stream = io.BytesIO(json_str.encode())
 
         # Upload JSON data to OpenAI and store the file ID
-        file_response = client.files.create(file=file_stream, purpose='answers')
+        file_response = client.files.create(file=file_stream, purpose='assistants')
         st.session_state.file_id = file_response.id
         st.success("File uploaded successfully to OpenAI!")
 
