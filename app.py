@@ -87,7 +87,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                     if hasattr(content_part, 'text') and content_part.text:
                         message_text = content_part.text.value
                         st.markdown(message_text)
-                        print("Msg:", message)
+                        st.write("Msg:", message)
 
                         # Check for and display image from annotations
                         if content_part.text.annotations:
@@ -96,18 +96,18 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                     file_id = annotation.file_path.file_id
                                     # Retrieve the image content
                                     image_content = client.files.content(file_id=file_id)
-                                    print("IMG API 2 Response:", image_content)
+                                    st.write("IMG API 2 Response:", image_content)
                                     try:
                                         # Attempt to decode as base64
                                         decoded_content = base64.b64decode(image_content)
-                                        print("Content is base64 encoded.")
+                                        st.write("Content is base64 encoded.")
                                     except (binascii.Error, ValueError):
-                                        print("Content is not base64 encoded.")
+                                        st.write("Content is not base64 encoded.")
                                     
                     # Handle direct image content
                     elif hasattr(content_part, 'image') and content_part.image:
                         image_url = content_part.image.url
-                        print("IMG API Response:", content_part.image)
+                        st.write("IMG API Response:", content_part.image)
 
 # Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
