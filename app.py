@@ -98,7 +98,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
 
                                     # Convert string to bytes if necessary
                                     if isinstance(image_content, str):
-                                        image_content = image_content.encode('latin1')  # or 'utf-8' depending on the content
+                                        image_content = image_content.encode('utf-8')  # or 'utf-8' depending on the content
                             
                                     # Save the image content to a PNG file
                                     image_path = 'temp_image.png'
