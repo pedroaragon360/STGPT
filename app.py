@@ -95,18 +95,12 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                     # Retrieve the image content
                                     image_content = client.files.content(file_id=file_id)
                                     print("IMG API 2 Response:", image_content)
-
-
-                                    if isinstance(base64_image_content, str):
-                                        # Display the image using base64
-                                        st.image(base64_image_content, channels="RGB", use_column_width=True)
-                            
-                                        # Create a link to download the image as a PNG file
-                                        href = f'<a href="data:image/png;base64,{base64_image_content}" download="image.png">Download Image</a>'
-                                        st.markdown(href, unsafe_allow_html=True)
-                                    else:
-                                        st.error("Received content is not in expected string (base64) format.")
-
+                                    try:
+                                        # Attempt to decode as base64
+                                        decoded_content = base64.b64decode(image_content)
+                                        print("Content is base64 encoded.")
+                                    except (binascii.Error, ValueError):
+                                        print("Content is not base64 encoded.")
                                     
                     # Handle direct image content
                     elif hasattr(content_part, 'image') and content_part.image:
