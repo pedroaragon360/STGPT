@@ -96,28 +96,17 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                     image_content = client.files.content(file_id=file_id)
                                     print("IMG API 2 Response:", image_content)
 
-                                    # Convert string to bytes if necessary
-                                    if isinstance(image_content, str):
-                                        image_content = image_content.encode('utf-8')  # or 'utf-8' depending on the content
+
+                                    if isinstance(base64_image_content, str):
+                                        # Display the image using base64
+                                        st.image(base64_image_content, channels="RGB", use_column_width=True)
                             
-                            
-                                    if isinstance(image_content, bytes):
-                                        # Save the image content to a file
-                                        image_path = 'temp_image.png'
-                                        with open(image_path, 'wb') as f:
-                                            f.write(image_content)
-                            
-                                        # Convert the image content to a base64 string
-                                        b64_image = base64.b64encode(image_content).decode()
-                            
-                                        # Create a link to download the image
-                                        href = f'<a href="data:image/png;base64,{b64_image}" download="{image_path}">Download Image</a>'
+                                        # Create a link to download the image as a PNG file
+                                        href = f'<a href="data:image/png;base64,{base64_image_content}" download="image.png">Download Image</a>'
                                         st.markdown(href, unsafe_allow_html=True)
-                            
-                                        # Display the image
-                                        st.image(image_path)
                                     else:
-                                        st.error("Received content is not in byte format.")
+                                        st.error("Received content is not in expected string (base64) format.")
+
                                     
                     # Handle direct image content
                     elif hasattr(content_part, 'image') and content_part.image:
