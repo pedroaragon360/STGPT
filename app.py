@@ -93,18 +93,31 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                 if hasattr(annotation, 'file_path') and annotation.file_path:
                                     file_id = annotation.file_path.file_id
                                     # Retrieve the image content
-                                    image_content = client.files.retrieve_content(file_id=file_id)
+                                    image_content = client.files.content(file_id=file_id)
                                     print("IMG API 2 Response:", image_content)
 
                                     # Convert string to bytes if necessary
                                     if isinstance(image_content, str):
                                         image_content = image_content.encode('utf-8')  # or 'utf-8' depending on the content
                             
-                                    # Save the image content to a PNG file
-                                    image_path = 'temp_image.png'
-                                    with open(image_path, 'wb') as f:
-                                        f.write(image_content)
-                                    st.image(image_path)
+                            
+                                    if isinstance(image_content, bytes):
+                                        # Save the image content to a file
+                                        image_path = 'temp_image.png'
+                                        with open(image_path, 'wb') as f:
+                                            f.write(image_content)
+                            
+                                        # Convert the image content to a base64 string
+                                        b64_image = base64.b64encode(image_content).decode()
+                            
+                                        # Create a link to download the image
+                                        href = f'<a href="data:image/png;base64,{b64_image}" download="{image_path}">Download Image</a>'
+                                        st.markdown(href, unsafe_allow_html=True)
+                            
+                                        # Display the image
+                                        st.image(image_path)
+                                    else:
+                                        st.error("Received content is not in byte format.")
                                     
                     # Handle direct image content
                     elif hasattr(content_part, 'image') and content_part.image:
