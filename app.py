@@ -82,14 +82,23 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
             with st.chat_message(message.role):
                 print("API Response:", st.session_state.messages)
                 for content_part in message.content:
-                    # Check if the content part is text
+                    # Check if the content part is tex
                     if hasattr(content_part, 'text') and content_part.text:
-                        message_text = content_part.text.value
-                        st.markdown(message_text)
-                    # Handle image content
-                    elif hasattr(content_part, 'image') and content_part.image:
-                        image_url = content_part.image.url
-                        st.image(image_url)
+                        # Check for image file path annotation
+                        if content_part.text.annotations:
+                            for annotation in content_part.text.annotations:
+                                if hasattr(annotation, 'file_path') and annotation.file_path:
+                                    file_id = annotation.file_path.file_id
+                                    # Retrieve the image content
+                                    image_content = client.files.retrieve_content(file_id=file_id)
+                                    # Save the image and display it
+                                    image_path = 'temp_image.png'
+                                    with open(image_path, 'wb') as f:
+                                        f.write(image_content)
+                                    st.image(image_path)
+                        else:
+                            message_text = content_part.text.value
+                            st.markdown(message_text)
 
 # Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
