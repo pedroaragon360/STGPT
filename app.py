@@ -105,7 +105,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                     with open(image_path, 'wb') as f:
                                         f.write(image_content)
                                     st.image(image_path)
-
+                                    
                     # Handle direct image content
                     elif hasattr(content_part, 'image') and content_part.image:
                         image_url = content_part.image.url
