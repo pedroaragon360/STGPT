@@ -55,7 +55,7 @@ if uploaded_file is not None:
         # Upload JSON data to OpenAI and store the file ID
         file_response = client.files.create(file=file_stream, purpose='assistants')
         st.session_state.file_id = file_response.id
-        st.success("File uploaded successfully to OpenAI!")
+        st.success("File uploaded successfully to OpenAI! File ID: {file_response.id}")
 
         # Optional: Display and Download JSON
         st.text_area("JSON Output", json_str, height=300)
@@ -98,7 +98,8 @@ if prompt := st.chat_input("How can I help you?"):
     # Include file ID in the request if available
     if "file_id" in st.session_state:
         message_data["file_ids"] = [st.session_state.file_id]
-
+        st.info(f"Sending message with associated file ID: {st.session_state.file_id}")
+    
     st.session_state.messages = client.beta.threads.messages.create(**message_data)
 
     st.session_state.run = client.beta.threads.runs.create(
