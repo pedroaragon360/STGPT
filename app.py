@@ -81,8 +81,14 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
         if message.role in ["user", "assistant"]:
             with st.chat_message(message.role):
                 for content_part in message.content:
-                    message_text = content_part.text.value
-                    st.markdown(message_text)
+                    # Check if the content part is text
+                    if hasattr(content_part, 'text') and content_part.text:
+                        message_text = content_part.text.value
+                        st.markdown(message_text)
+                    # Handle image content
+                    elif hasattr(content_part, 'image') and content_part.image:
+                        image_url = content_part.image.url
+                        st.image(image_url)
 
 # Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
