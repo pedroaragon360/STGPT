@@ -80,12 +80,14 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
     for message in reversed(st.session_state.messages.data):
         if message.role in ["user", "assistant"]:
             with st.chat_message(message.role):
+
                 print("API Response:", st.session_state.messages)
                 for content_part in message.content:
                     # Handle text content
                     if hasattr(content_part, 'text') and content_part.text:
                         message_text = content_part.text.value
                         st.markdown(message_text)
+                        print("Msg:", message)
 
                         # Check for and display image from annotations
                         if content_part.text.annotations:
