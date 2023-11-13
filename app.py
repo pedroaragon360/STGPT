@@ -80,6 +80,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
     for message in reversed(st.session_state.messages.data):
         if message.role in ["user", "assistant"]:
             with st.chat_message(message.role):
+                print("API Response:", st.session_state.messages)
                 for content_part in message.content:
                     # Check if the content part is text
                     if hasattr(content_part, 'text') and content_part.text:
