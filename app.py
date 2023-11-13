@@ -94,16 +94,13 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                     file_id = annotation.file_path.file_id
                                     # Retrieve the image content
                                     image_content = client.files.retrieve_content(file_id=file_id)
-                                    # Save and display the image
-                                    image_path = 'temp_image.png'
-                                    with open(image_path, 'wb') as f:
-                                        f.write(image_content)
-                                    st.image(image_path)
+                                    print("IMG API 2 Response:", image_content)
+
 
                     # Handle direct image content
                     elif hasattr(content_part, 'image') and content_part.image:
                         image_url = content_part.image.url
-                        st.image(image_url)
+                        print("IMG API Response:", content_part.image)
 
 # Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
