@@ -95,12 +95,16 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                     # Retrieve the image content
                                     image_content = client.files.retrieve_content(file_id=file_id)
                                     print("IMG API 2 Response:", image_content)
+
+                                    # Convert string to bytes if necessary
+                                    if isinstance(image_content, str):
+                                        image_content = image_content.encode('latin1')  # or 'utf-8' depending on the content
+                            
                                     # Save the image content to a PNG file
                                     image_path = 'temp_image.png'
                                     with open(image_path, 'wb') as f:
                                         f.write(image_content)
                                     st.image(image_path)
-
 
                     # Handle direct image content
                     elif hasattr(content_part, 'image') and content_part.image:
