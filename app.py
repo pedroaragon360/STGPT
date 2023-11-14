@@ -180,13 +180,14 @@ if hasattr(st.session_state.run, 'status'):
     elif st.session_state.run.status == "failed":
         st.session_state.retry_error += 1
         with st.chat_message('assistant'):
+            if hasattr(st.session_state.run, 'last_error'):
+                st.write("Atención: " + st.session_state.run.last_error.message)
             if st.session_state.retry_error < 3:
-                st.write("Run failed, retrying ......")
+                st.write("Intentándolo de nuevo ......")
                 time.sleep(3)
                 st.rerun()
             else:
-                st.error("FAILED: The OpenAI API is currently processing too many requests. Please try again later ......")
-                st.write(st.session_state.run.last_error.message)
+                st.error("Lo sentimos, no se ha podido procesar: " + st.session_state.run.last_error.message)
 
     elif st.session_state.run.status != "completed":
         st.session_state.run = client.beta.threads.runs.retrieve(
