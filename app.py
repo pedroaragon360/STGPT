@@ -92,6 +92,13 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                         # Display the image
                                         st.write("Img on text:")
                                         st.image(response.content)
+                                         # Convert the image bytes to a base64 string
+                                        b64_image = base64.b64encode(response.content).decode()
+                                        
+                                        # Create a download button
+                                        href = f'<a href="data:file/png;base64,{b64_image}" download="downloaded_image.png">Download Image</a>'
+                                        st.markdown(href, unsafe_allow_html=True)
+
                                     else:
                                         st.error("Failed to retrieve image")
                                     
