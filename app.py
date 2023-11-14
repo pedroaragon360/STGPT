@@ -168,7 +168,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
 # Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
     prompt_raw=prompt
-    prompt = prompt.replace("\n", "\n\n")
+    #prompt = prompt.replace("\n", "\n\n")
     if "file_id" in st.session_state and "file_name" in st.session_state:
         prompt_raw = "Renombra el archivo " + str(st.session_state.file_id) + " por " + str(st.session_state.file_name) + ". " + prompt_raw
     message_data = {
