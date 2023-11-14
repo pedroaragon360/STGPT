@@ -132,7 +132,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
 if prompt := st.chat_input("How can I help you?"):
 
     if "file_id" in st.session_state and "file_name" in st.session_state:
-        prompt = "Archivo subido con formato " + str(st.session_state.file_name) + ". " + str(st.session_state.file_id}) + ". " + prompt
+        prompt = "Archivo subido con formato " + str(st.session_state.file_name) + ". " + str(st.session_state.file_id) + ". " + prompt
     message_data = {
         "thread_id": st.session_state.thread.id,
         "role": "user",
