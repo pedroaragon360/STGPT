@@ -191,7 +191,7 @@ if prompt := st.chat_input("How can I help you?"):
         thread_id=st.session_state.thread.id,
         assistant_id=st.session_state.assistant.id,
     )
-    st.write('<img src="https://thevalley.es/lms/i/load.gif" height="20px">Pensando...' if st.session_state.run.status == 'queued' else '', unsafe_allow_html=True)
+    st.write('<img src="https://thevalley.es/lms/i/load.gif" height="28px"> Pensando...' if st.session_state.run.status == 'queued' else '', unsafe_allow_html=True)
 
     if st.session_state.retry_error < 3:
         time.sleep(1)
