@@ -156,13 +156,14 @@ if prompt := st.chat_input("How can I help you?"):
     if "file_id" in st.session_state:
         message_data["file_ids"] = [st.session_state.file_id]
         st.session_state.pop('file_id')
-
+    
     st.session_state.messages = client.beta.threads.messages.create(**message_data)
 
     st.session_state.run = client.beta.threads.runs.create(
         thread_id=st.session_state.thread.id,
         assistant_id=st.session_state.assistant.id,
     )
+    st.write(st.session_state.run.status)
     if st.session_state.retry_error < 3:
         time.sleep(1)
         st.rerun()
@@ -175,7 +176,6 @@ if hasattr(st.session_state.run, 'status'):
         if st.session_state.retry_error < 3:
             time.sleep(1)
             st.rerun()
-
     elif st.session_state.run.status == "failed":
         st.session_state.retry_error += 1
         with st.chat_message('assistant'):
