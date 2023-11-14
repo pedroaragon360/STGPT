@@ -190,7 +190,7 @@ if hasattr(st.session_state.run, 'status'):
                 thread_id=st.session_state.thread.id,
                 run_id=st.session_state.run.id,
             )
-        if st.session_state.retry_error < 3:
-            st.experimental_rerun()
+            if st.session_state.retry_error < 3:
+                st.experimental_rerun()
 
 
