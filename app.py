@@ -93,7 +93,6 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                             for annotation in content_part.text.annotations:
                                 if hasattr(annotation, 'file_path') and annotation.file_path:
                                     file_id = annotation.file_path.file_id
-                                    # Retrieve the image content
                                     # Retrieve the image content using the file ID
                                     response = client.files.with_raw_response.retrieve_content(file_id)
                                     if response.status_code == 200:
@@ -109,8 +108,13 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                 # Check for image file and retrieve the file ID
                     if hasattr(content_part, 'image_file') and content_part.image_file:
                         image_file_id = content_part.image_file.file_id
-                        st.write(f"Image File ID: {image_file_id}")
-
+                        # Retrieve the image content using the file ID
+                        response = client.files.with_raw_response.retrieve_content(image_file_id)
+                        if response.status_code == 200:
+                            # Display the image
+                            st.image(response.content)
+                        else:
+                            st.error("Failed to retrieve image")
 
 # Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
