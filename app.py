@@ -104,16 +104,24 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                 if hasattr(annotation, 'file_path') and annotation.file_path:
                                     file_id = annotation.file_path.file_id
                                     # Retrieve the image content using the file ID
-                                    st.write(client.files.retrieve(file_id).filename)
+                                    file_name = client.files.retrieve(file_id).filename #eg. /mnt/data/archivo.json
                                     response = client.files.with_raw_response.retrieve_content(file_id)
                                     if response.status_code == 200:
-                                        #st.image(response.content)
                                         b64_image = base64.b64encode(response.content).decode()
-                                        # Create a download button
-                                        href = f'<a href="data:file/png;base64,{b64_image}" download="downloaded_image.png">Descargar imagen</a>'
+                                    
+                                        # Guess the MIME type of the file based on its extension
+                                        mime_type, _ = mimetypes.guess_type(file_name)
+                                        if mime_type is None:
+                                            mime_type = "application/octet-stream"  # Default for unknown types
+                                    
+                                        # Extract just the filename from the path
+                                        filename = file_name.split('/')[-1]
+                                    
+                                        # Create a download button with the correct MIME type and filename
+                                        href = f'<a href="data:{mime_type};base64,{b64_image}" download="{filename}">Descargar archivo</a>'
                                         st.markdown(href, unsafe_allow_html=True)
                                     else:
-                                        st.error("Failed to retrieve image")
+                                        st.error("Failed to retrieve file")
                                     
                     # Handle direct image content
                     if hasattr(content_part, 'image') and content_part.image:
