@@ -5,7 +5,7 @@ import uuid
 import time
 import pandas as pd
 import io
-import base64  # Import base64 module
+import base64
 from openai import OpenAI
 
 # Initialize OpenAI client
@@ -94,7 +94,6 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                         #st.write("Img on text:")
                                         #st.image(response.content)
                                          # Convert the image bytes to
-                                        a base64 string
                                         b64_image = base64.b64encode(response.content).decode()
                                         
                                         # Create a download button
