@@ -106,8 +106,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                             message_text = content_part.text.value
                             pattern = r'\[.*?\]\(sandbox:.*?\)'
                             message_text = re.sub(pattern, '', message_text)
-                            message_text = message_text.replace("\n", "<br>")
-                            st.markdown(message_text, unsafe_allow_html=True)
+                            st.write(message_text)
                             #st.write("Msg:", message)
     
                             # Check for and display image from annotations
@@ -152,7 +151,6 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
 # Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
     prompt_raw=prompt
-    prompt = prompt.replace("\n", "<br>")
     if "file_id" in st.session_state and "file_name" in st.session_state:
         prompt = "Renombra el archivo " + str(st.session_state.file_id) + " por " + str(st.session_state.file_name) + ". " + prompt
     message_data = {
@@ -162,7 +160,7 @@ if prompt := st.chat_input("How can I help you?"):
     }
     with tab1:
         with st.chat_message('user'):
-            st.markdown(prompt, unsafe_allow_html=True)
+            st.write(prompt)
             
     # Include file ID in the request if available
     if "file_id" in st.session_state:
