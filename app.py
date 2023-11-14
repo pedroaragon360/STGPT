@@ -104,6 +104,12 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                 with st.chat_message(message.role):
     
                     for content_part in message.content:
+                        run_steps = client.beta.threads.runs.steps.list(thread_id=st.session_state.thread.id,run_id=st.session_state.run.id  )
+                        #st.write(run_steps.data)
+                        for steps in reversed(run_steps.data):
+                            if hasattr(steps.step_details, 'tool_calls'):
+                                st.text(steps.step_details.tool_calls[0].code_interpreter.input)
+                    #if steps.tools[0].type == 'code_interpreter':
                         st.write(message)
                         # Handle text content
                         if hasattr(content_part, 'text') and content_part.text:
@@ -154,13 +160,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                 st.error("Failed to retrieve image")
 
                     
-                with st.chat_message("assistant"):
-                    run_steps = client.beta.threads.runs.steps.list(thread_id=st.session_state.thread.id,run_id=st.session_state.run.id  )
-                    #st.write(run_steps.data)
-                    for steps in reversed(run_steps.data):
-                        if hasattr(steps.step_details, 'tool_calls'):
-                            st.text(steps.step_details.tool_calls[0].code_interpreter.input)
-                    #if steps.tools[0].type == 'code_interpreter':
+
 
 
 # Chat input and message creation with file ID
