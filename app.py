@@ -76,6 +76,9 @@ if st.session_state.uploaded_file is not None:
         except Exception as e:
             st.error(f"An error occurred: {e}")
 
+if st.session_state.uploaded_file is None:
+    st.session_state.file_processed = False
+
 # Initialize OpenAI assistant
 if "assistant" not in st.session_state:
     openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -192,7 +195,4 @@ if hasattr(st.session_state.run, 'status'):
             time.sleep(3)
             st.rerun()
 
-
-if st.session_state.uploaded_file is None:
-    st.session_state.file_processed = False
 
