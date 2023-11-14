@@ -52,6 +52,7 @@ if uploaded_file is not None:
         file_stream = uploaded_file.getvalue()
         file_response = client.files.create(file=file_stream, purpose='assistants')
         st.session_state.file_id = file_response.id
+        st.session_state.file_type = file_response.file_type
 
         st.sidebar.success(f"Archivo subido. File ID: {file_response.id}")
         # Determine MIME type
@@ -141,6 +142,7 @@ if prompt := st.chat_input("How can I help you?"):
     # Include file ID in the request if available
     if "file_id" in st.session_state:
         message_data["file_ids"] = [st.session_state.file_id]
+        message_data["content"] = "Archivo subido con formato " + str(st.session_state.file_type) + str(message_data["content"])
         st.write(f"Sending message with associated file ID: {st.session_state.file_id}")
         st.session_state.pop('file_id')
     
