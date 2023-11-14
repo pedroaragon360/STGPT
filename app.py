@@ -7,6 +7,8 @@ import pandas as pd
 import io
 import base64
 from openai import OpenAI
+import mimetypes
+
 
 # Initialize OpenAI client
 client = OpenAI()
