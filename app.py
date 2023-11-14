@@ -29,6 +29,10 @@ if "messages" not in st.session_state:
 if "retry_error" not in st.session_state:
     st.session_state.retry_error = 0
 
+# Initialize session state variables
+if "session_id" not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
+    
 # Set up the page
 st.set_page_config(page_title="Asistente")
 st.sidebar.image("https://thevalley.es/lms/i/logow.png")
@@ -38,30 +42,36 @@ st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
 st.sidebar.divider()
 
 # File uploader for CSV, XLS, XLSX
-uploaded_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"])
 
-if uploaded_file is not None:
-    # Determine the file type
-    file_type = uploaded_file.type
+if 'uploaded_file' not in st.session_state:
+    st.session_state.uploaded_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"])
 
-    try:
-        file_stream = uploaded_file.getvalue()
-        file_response = client.files.create(file=file_stream, purpose='assistants')
-        st.session_state.file_id = file_response.id
 
-        st.sidebar.success(f"Archivo subido. File ID: {file_response}")
-        # Determine MIME type
-        mime_type, _ = mimetypes.guess_type(uploaded_file.name)
-        if mime_type is None:
-            mime_type = "application/octet-stream"  # Default for unknown types
+if st.session_state.uploaded_file is not None:
+    if "file_processed" not in st.session_state or not st.session_state.file_processed:
+        # Process and upload the file only once
+        try:
+            # ... [file processing and uploading code] ...
+            st.session_state.file_processed = True
+            file_type = uploaded_file.type
+            file_stream = uploaded_file.getvalue()
+            file_response = client.files.create(file=file_stream, purpose='assistants')
+            st.session_state.file_id = file_response.id
     
-        # Create download button
-        st.sidebar.download_button(
-            label="Descargar fichero subido",
-            data=file_stream,
-            file_name=uploaded_file.name,
-            mime=mime_type
-        )
+            st.sidebar.success(f"Archivo subido. File ID: {file_response}")
+            
+            # Determine MIME type
+            mime_type, _ = mimetypes.guess_type(uploaded_file.name)
+            if mime_type is None:
+                mime_type = "application/octet-stream"  # Default for unknown types
+        
+            # Create download button
+            st.sidebar.download_button(
+                label="Descargar fichero subido",
+                data=file_stream,
+                file_name=uploaded_file.name,
+                mime=mime_type
+            )
            
     except Exception as e:
         st.error(f"An error occurred: {e}")
@@ -181,3 +191,8 @@ if hasattr(st.session_state.run, 'status'):
         if st.session_state.retry_error < 3:
             time.sleep(3)
             st.rerun()
+
+
+if st.session_state.uploaded_file is None:
+    st.session_state.file_processed = False
+
