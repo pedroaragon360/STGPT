@@ -52,7 +52,7 @@ if uploaded_file is not None:
         file_stream = uploaded_file.getvalue()
         file_response = client.files.create(file=file_stream, purpose='assistants')
         st.session_state.file_id = file_response.id
-        st.session_state.file_type = file_response.file_type
+        st.session_state.file_name = file_response.name
 
         st.sidebar.success(f"Archivo subido. File ID: {file_response.id}")
         # Determine MIME type
@@ -130,21 +130,20 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
 
 # Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
-    with st.chat_message('user'):
-        st.write(prompt)
-        
-    if "file_id" in st.session_state and "file_type" in st.session_state:
-        prompt = "Archivo subido con formato " + str(st.session_state.file_type) + ". " + prompt
+
+    if "file_id" in st.session_state and "file_name" in st.session_state:
+        prompt = "Archivo subido con formato " + str(st.session_state.file_name) + ". " + str(st.session_state.file_id}) + ". " + prompt
     message_data = {
         "thread_id": st.session_state.thread.id,
         "role": "user",
         "content": prompt
     }
-
+    with st.chat_message('user'):
+        st.write(prompt)
+        
     # Include file ID in the request if available
     if "file_id" in st.session_state:
         message_data["file_ids"] = [st.session_state.file_id]
-        st.write(f"Sending message with associated file ID: {st.session_state.file_id}")
         st.session_state.pop('file_id')
     
     st.session_state.messages = client.beta.threads.messages.create(**message_data)
