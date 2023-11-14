@@ -45,11 +45,7 @@ st.markdown('<style>[data-baseweb=tab-list] {   position: fixed !important; top:
 if 'uploader_key' not in st.session_state:
     st.session_state.uploader_key = 0
 
-st.toast('Warming up...')
-st.error('Error message')
-st.warning('Warning message')
-st.info('Info message')
-st.success('Success message')
+
 
 # File uploader for CSV, XLS, XLSX
 with tab2:
@@ -114,8 +110,8 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                             #st.write(run_steps.data)
                             for steps in reversed(run_steps.data):
                                 if hasattr(steps.step_details, 'tool_calls'):
-                                    st.text(steps.step_details.tool_calls[0].code_interpreter.input)
-                                    st.markdown('---')
+                                    st.info(steps.step_details.tool_calls[0].code_interpreter.input)
+                                    
                     #if steps.tools[0].type == 'code_interpreter':
                         # Handle text content
                         if hasattr(content_part, 'text') and content_part.text:
