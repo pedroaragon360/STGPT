@@ -109,6 +109,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                         for steps in reversed(run_steps.data):
                             if hasattr(steps.step_details, 'tool_calls'):
                                 st.text(steps.step_details.tool_calls[0].code_interpreter.input)
+                                st.divider()
                     #if steps.tools[0].type == 'code_interpreter':
                         st.write(message)
                         # Handle text content
