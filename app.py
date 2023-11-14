@@ -40,7 +40,9 @@ st.sidebar.markdown("Analiza un archivo de datos:")
 # Initialize session state for the uploader key
 if 'uploader_key' not in st.session_state:
     st.session_state.uploader_key = 0
-
+with st.spinner(text='In progress'):
+    time.sleep(30)
+    st.success('Done')
 # File uploader for CSV, XLS, XLSX
 uploaded_file = st.sidebar.file_uploader("", type=["csv", "xls", "json"], key=f'file_uploader_{st.session_state.uploader_key}')
 
