@@ -174,7 +174,7 @@ if prompt := st.chat_input("How can I help you?"):
         thread_id=st.session_state.thread.id,
         assistant_id=st.session_state.assistant.id,
     )
-    st.write((st.session_state.run.status == 'queued') ? 'Pensando...' : '')
+    st.write('Pensando...' if st.session_state.run.status == 'queued' else '')
 
     if st.session_state.retry_error < 3:
         time.sleep(1)
