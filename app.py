@@ -102,7 +102,8 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
         if message.role in ["user", "assistant"]:
             with tab1:
                 with st.chat_message(message.role):
-                    for content_part in message.content and message.role == 'assistant':
+                    for content_part in message.content:
+                    if message.role == 'assistant':
                         run_steps = client.beta.threads.runs.steps.list(thread_id=st.session_state.thread.id,run_id=st.session_state.run.id  )
                         #st.write(run_steps.data)
                         for steps in reversed(run_steps.data):
