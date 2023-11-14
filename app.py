@@ -58,7 +58,7 @@ if uploaded_file is not None:
         # Create download button
         st.sidebar.download_button(
             label="Descargar fichero subido",
-            data=file_content,
+            data=file_stream,
             file_name=uploaded_file.name,
             mime=mime_type
         )
