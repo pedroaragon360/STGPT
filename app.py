@@ -103,13 +103,13 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
             with tab1:
                 with st.chat_message(message.role):
                     for content_part in message.content:
-                    if message.role == 'assistant':
-                        run_steps = client.beta.threads.runs.steps.list(thread_id=st.session_state.thread.id,run_id=st.session_state.run.id  )
-                        #st.write(run_steps.data)
-                        for steps in reversed(run_steps.data):
-                            if hasattr(steps.step_details, 'tool_calls'):
-                                st.text(steps.step_details.tool_calls[0].code_interpreter.input)
-                                st.markdown('---')
+                        if message.role == 'assistant':
+                            run_steps = client.beta.threads.runs.steps.list(thread_id=st.session_state.thread.id,run_id=st.session_state.run.id  )
+                            #st.write(run_steps.data)
+                            for steps in reversed(run_steps.data):
+                                if hasattr(steps.step_details, 'tool_calls'):
+                                    st.text(steps.step_details.tool_calls[0].code_interpreter.input)
+                                    st.markdown('---')
                     #if steps.tools[0].type == 'code_interpreter':
                         # Handle text content
                         if hasattr(content_part, 'text') and content_part.text:
