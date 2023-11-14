@@ -102,7 +102,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
             st.write(iRun)
             if iRun.tools[0].type == 'code_interpreter':
                 run_steps = client.beta.threads.runs.steps.list(thread_id=st.session_state.thread.id,run_id=iRun.id  )
-                    st.write(run_steps)
+                st.write(run_steps)
 
     st.session_state.messages = client.beta.threads.messages.list(
         thread_id=st.session_state.thread.id
