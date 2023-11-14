@@ -29,9 +29,12 @@ if "messages" not in st.session_state:
 if "retry_error" not in st.session_state:
     st.session_state.retry_error = 0
 
+# Initialize session state variables
 if 'uploaded_file' not in st.session_state:
     st.session_state.uploaded_file = None
-
+if 'file_processed' not in st.session_state:
+    st.session_state.file_processed = False
+    
 # Set up the page
 st.set_page_config(page_title="Asistente")
 st.sidebar.image("https://thevalley.es/lms/i/logow.png")
@@ -41,12 +44,13 @@ st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
 st.sidebar.divider()
 
 # File uploader for CSV, XLS, XLSX
-new_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"])
+new_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"], key="file_uploader")
 
 if new_file is not None:
     st.session_state.uploaded_file = new_file
+    st.session_state.file_processed = False
 
-if st.session_state.uploaded_file is not None:
+if st.session_state.uploaded_file is not None and not st.session_state.file_processed:
     uploaded_file = st.session_state.uploaded_file
     file_type = uploaded_file.type
 
@@ -55,7 +59,7 @@ if st.session_state.uploaded_file is not None:
         file_response = client.files.create(file=file_stream, purpose='assistants')
         st.session_state.file_id = file_response.id
 
-        st.sidebar.success(f"Archivo subido. File ID: {file_response}")
+        st.sidebar.success(f"Archivo subido. File ID: {file_response.id}")
         
         mime_type, _ = mimetypes.guess_type(uploaded_file.name)
         if mime_type is None:
@@ -67,6 +71,9 @@ if st.session_state.uploaded_file is not None:
             file_name=uploaded_file.name,
             mime=mime_type
         )
+
+        st.session_state.file_processed = True  # Set the flag to True after processing
+        
     except Exception as e:
         st.error(f"An error occurred: {e}")
         
