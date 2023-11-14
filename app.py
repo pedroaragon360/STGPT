@@ -37,7 +37,7 @@ st.sidebar.divider()
 #st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
 st.sidebar.markdown("Analiza un archivo de datos:")
 
-tab1, tab2 = st.tabs(["Tab 1", "Tab2"])
+tab1, tab2 = st.tabs(["TConversación", "Sube un fichero"])
 
 with tab1:
     st.write("this is tab 1")
@@ -49,7 +49,8 @@ if 'uploader_key' not in st.session_state:
     st.session_state.uploader_key = 0
 
 # File uploader for CSV, XLS, XLSX
-uploaded_file = st.sidebar.file_uploader("", type=["csv", "xls", "json"], key=f'file_uploader_{st.session_state.uploader_key}')
+with tab2:
+    uploaded_file = st.sidebar.file_uploader("", type=["csv", "xls", "json"], key=f'file_uploader_{st.session_state.uploader_key}')
 
 if uploaded_file is not None:
     # Determine the file type
@@ -60,20 +61,21 @@ if uploaded_file is not None:
         file_response = client.files.create(file=file_stream, purpose='assistants')
         st.session_state.file_id = file_response.id
         st.session_state.file_name = uploaded_file.name
-
-        st.sidebar.success(f"Archivo subido. File ID: {file_response.id}")
+        with tab2:
+            st.success(f"Archivo subido. File ID: {file_response.id}")
         # Determine MIME type
         mime_type, _ = mimetypes.guess_type(uploaded_file.name)
         if mime_type is None:
             mime_type = "application/octet-stream"  # Default for unknown types
     
         # Create download button
-        st.sidebar.download_button(
-            label="Descargar fichero subido",
-            data=file_stream,
-            file_name=uploaded_file.name,
-            mime=mime_type
-        )
+        with tab2:
+            st.download_button(
+                label="Descargar fichero subido",
+                data=file_stream,
+                file_name=uploaded_file.name,
+                mime=mime_type
+            )
 
         # Reset the uploader by changing the key
         st.session_state.uploader_key += 1
