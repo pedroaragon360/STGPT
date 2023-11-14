@@ -58,6 +58,7 @@ if st.session_state.uploaded_file is not None and not st.session_state.file_proc
         file_stream = uploaded_file.getvalue()
         file_response = client.files.create(file=file_stream, purpose='assistants')
         st.session_state.file_id = file_response.id
+        st.session_state.file_processed = True  # Set the flag to True after processing
 
         st.sidebar.success(f"Archivo subido. File ID: {file_response.id}")
         
@@ -71,8 +72,6 @@ if st.session_state.uploaded_file is not None and not st.session_state.file_proc
             file_name=uploaded_file.name,
             mime=mime_type
         )
-
-        st.session_state.file_processed = True  # Set the flag to True after processing
         
     except Exception as e:
         st.error(f"An error occurred: {e}")
