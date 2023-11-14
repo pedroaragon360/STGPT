@@ -175,7 +175,7 @@ if "assistant_placeholder" not in st.session_state:
 
 # Handle run status
 if hasattr(st.session_state.run, 'status'):
-    if st.session_state.run.status == "running":
+    if st.session_state.run.status == "queued":
         with st.session_state.assistant_placeholder.container():
             st.chat_message('assistant', "Thinking ......")
 
