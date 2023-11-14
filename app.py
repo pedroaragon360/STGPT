@@ -174,10 +174,11 @@ if hasattr(st.session_state.run, 'status'):
     
     if st.session_state.run.status == "running":
         # Show a loading spinner while processing
-        with st.sidebar.spinner('Processing... Please wait.'):
-            if st.session_state.retry_error < 3:
-                st.session_state.retry_error += 1
-                st.experimental_rerun()
+        if st.session_state.retry_error < 3:
+            st.session_state.retry_error += 1
+            st.experimental_rerun()
+    elif st.session_state.run.status == "queued":
+        st.write('queued')
     elif st.session_state.run.status == "failed":
         st.session_state.retry_error += 1
         with st.chat_message('assistant'):
