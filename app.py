@@ -43,14 +43,10 @@ if uploaded_file is not None:
 
     try:
         # Read the file into a Pandas DataFrame
-        if file_type == "text/csv":
-            df = pd.read_csv(uploaded_file)
-        elif file_type in ["application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]:
-            df = pd.read_excel(uploaded_file)
-
-        # Convert DataFrame to JSON
-        json_str = df.to_json(orient='records', indent=4)
-        file_stream = io.BytesIO(json_str.encode())
+        # Read the file content
+        file_content = uploaded_file.read().decode("utf-8")
+        file_stream = io.BytesIO(file_content.encode())
+        
 
         # Upload JSON data to OpenAI and store the file ID
         file_response = client.files.create(file=file_stream, purpose='assistants')
