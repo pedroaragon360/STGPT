@@ -94,14 +94,6 @@ if "assistant" not in st.session_state:
 
 # Display chat messages
 elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == "completed":
-    with tab1:
-        with st.chat_message("assistant"):
-            run_steps = client.beta.threads.runs.steps.list(thread_id=st.session_state.thread.id,run_id=st.session_state.run.id  )
-            st.write(run_steps.data)
-            for steps in reversed(run_steps.data):
-                if hasattr(steps.step_details, 'tool_calls'):
-                    st.write(steps.step_details.tool_calls)
-            #if steps.tools[0].type == 'code_interpreter':
 
     st.session_state.messages = client.beta.threads.messages.list(
         thread_id=st.session_state.thread.id
@@ -160,6 +152,16 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                 st.image(response.content)
                             else:
                                 st.error("Failed to retrieve image")
+
+                        
+                        with st.chat_message("assistant"):
+                            run_steps = client.beta.threads.runs.steps.list(thread_id=st.session_state.thread.id,run_id=st.session_state.run.id  )
+                            st.write(run_steps.data)
+                            for steps in reversed(run_steps.data):
+                                if hasattr(steps.step_details, 'tool_calls'):
+                                    st.write(steps.step_details.tool_calls[0].code_interpreter.input)
+                            #if steps.tools[0].type == 'code_interpreter':
+
 
 # Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
