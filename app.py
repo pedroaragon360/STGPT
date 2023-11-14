@@ -34,15 +34,15 @@ st.set_page_config(page_title="Asistente")
 st.sidebar.image("https://thevalley.es/lms/i/logow.png")
 st.sidebar.title("Práctica")
 st.sidebar.divider()
-st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
-st.sidebar.divider()
+#st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
+st.sidebar.title("Analiza un archivo de datos:")
 
 # Initialize session state for the uploader key
 if 'uploader_key' not in st.session_state:
     st.session_state.uploader_key = 0
 
 # File uploader for CSV, XLS, XLSX
-uploaded_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"], key=f'file_uploader_{st.session_state.uploader_key}')
+uploaded_file = st.sidebar.file_uploader("", type=["csv", "xls", "json"], key=f'file_uploader_{st.session_state.uploader_key}')
 
 if uploaded_file is not None:
     # Determine the file type
