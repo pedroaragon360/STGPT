@@ -163,7 +163,6 @@ if prompt := st.chat_input("How can I help you?"):
         thread_id=st.session_state.thread.id,
         assistant_id=st.session_state.assistant.id,
     )
-
     if st.session_state.retry_error < 3:
         time.sleep(1)
         st.rerun()
@@ -176,6 +175,7 @@ if hasattr(st.session_state.run, 'status'):
         if st.session_state.retry_error < 3:
             time.sleep(1)
             st.rerun()
+
     elif st.session_state.run.status == "failed":
         st.session_state.retry_error += 1
         with st.chat_message('assistant'):
@@ -194,5 +194,3 @@ if hasattr(st.session_state.run, 'status'):
         if st.session_state.retry_error < 3:
             time.sleep(3)
             st.rerun()
-
-
