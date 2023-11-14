@@ -160,7 +160,7 @@ if prompt := st.chat_input("How can I help you?"):
     }
     with tab1:
         with st.chat_message('user'):
-            st.markdown(prompt)
+            st.markdown(prompt, unsafe_allow_html=True)
             
     # Include file ID in the request if available
     if "file_id" in st.session_state:
