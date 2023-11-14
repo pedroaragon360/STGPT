@@ -39,7 +39,7 @@ st.markdown('<div id="logoth" style="z-index: 9999999; background: url(https://t
 
 tab1, tab2 = st.tabs(["Conversación", "Sube un fichero"])
 
-st.markdown('<style>[data-baseweb=tab-list] {   position: fixed !important; top: 0.5em;   left: 13em;   z-index: 9999999; } [data-testid=stToolbar]{ top:-10em }</style>', unsafe_allow_html=True)
+st.markdown('<style>[data-baseweb=tab-list] {   position: fixed !important; top: 0.5em;   left: 13em;   z-index: 9999999; } [data-testid=stToolbar]{ top:-10em } [class^="viewerBadge_link"] {zoom:0.6}</style>', unsafe_allow_html=True)
 
 # Initialize session state for the uploader key
 if 'uploader_key' not in st.session_state:
