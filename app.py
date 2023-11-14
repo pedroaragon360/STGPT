@@ -175,14 +175,14 @@ if prompt := st.chat_input("How can I help you?"):
         assistant_id=st.session_state.assistant.id,
     )
     st.write(st.session_state.run.status)
-    if st.session_state.run.status == 'queued':
-        st.snow()
+
     if st.session_state.retry_error < 3:
         time.sleep(1)
         st.rerun()
 
 # Handle run status
 if hasattr(st.session_state.run, 'status'):
+    st.snow()
     if st.session_state.run.status == "running":
         with tab1:
             with st.chat_message('assistant'):
