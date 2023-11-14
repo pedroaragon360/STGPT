@@ -177,7 +177,8 @@ if "assistant_placeholder" not in st.session_state:
 if hasattr(st.session_state.run, 'status'):
     if st.session_state.run.status == "queued":
         with st.session_state.assistant_placeholder.container():
-            st.chat_message('assistant', "Thinking ......")
+            st.chat_message('assistant')
+            st.write("Thinking ......")
 
         if st.session_state.retry_error < 3:
             # Use a non-blocking way to wait and then rerun
