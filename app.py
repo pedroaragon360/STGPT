@@ -98,7 +98,8 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
         run_steps = client.beta.threads.runs.steps.list(thread_id=st.session_state.thread.id,run_id=st.session_state.run.id  )
         st.write(run_steps.data)
         for steps in reversed(run_steps.data):
-            st.write(steps.step_details)
+            if "tool_calls" in st.write(steps.step_details):
+                st.write(steps.step_details.tool_calls.input)
         #if steps.tools[0].type == 'code_interpreter':
 
     st.session_state.messages = client.beta.threads.messages.list(
