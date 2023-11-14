@@ -146,7 +146,8 @@ if prompt := st.chat_input("How can I help you?"):
     # Include file ID in the request if available
     if "file_id" in st.session_state:
         message_data["file_ids"] = [st.session_state.file_id]
-        st.info(f"Sending message with associated file ID: {st.session_state.file_id}")
+        st.write(f"Sending message with associated file ID: {st.session_state.file_id}")
+        st.session_state.pop('file_id')
     
     st.session_state.messages = client.beta.threads.messages.create(**message_data)
 
