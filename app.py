@@ -140,20 +140,15 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                             st.error("Failed to retrieve image")
 
 
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 if prompt := st.chat_input("What is up?"):
 
     
-    if "file_id" in st.session_state and "file_name" in st.session_state:
-        prompt = "Renombra el archivo " + str(st.session_state.file_id) + " por " + str(st.session_state.file_name) + ". " + prompt
-
     st.session_state.messages.append({"role": "user", "content": prompt})
-    
-    # Include file ID in the request if available
-    if "file_id" in st.session_state:
-        st.session_state.messages.file_ids = [st.session_state.file_id]
-        st.session_state.pop('file_id')
-        
+     
     with st.chat_message("user"):
         st.markdown(prompt)
 
