@@ -104,7 +104,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                 if hasattr(annotation, 'file_path') and annotation.file_path:
                                     file_id = annotation.file_path.file_id
                                     # Retrieve the image content using the file ID
-                                    st.write(annotation.file_path)
+                                    st.write(annotation.file_path.text)
                                     response = client.files.with_raw_response.retrieve_content(file_id)
                                     if response.status_code == 200:
                                         #st.image(response.content)
