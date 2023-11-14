@@ -29,9 +29,6 @@ if "messages" not in st.session_state:
 if "retry_error" not in st.session_state:
     st.session_state.retry_error = 0
 
-# Initialize session state variables
-if "session_id" not in st.session_state:
-    st.session_state.session_id = str(uuid.uuid4())
     
 # Set up the page
 st.set_page_config(page_title="Asistente")
@@ -43,9 +40,7 @@ st.sidebar.divider()
 
 # File uploader for CSV, XLS, XLSX
 
-if 'uploaded_file' not in st.session_state:
-    st.session_state.uploaded_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"])
-
+ st.session_state.uploaded_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"])
 
 if st.session_state.uploaded_file is not None:
     if "file_processed" not in st.session_state or not st.session_state.file_processed:
@@ -75,6 +70,7 @@ if st.session_state.uploaded_file is not None:
            
         except Exception as e:
             st.error(f"An error occurred: {e}")
+
 
 # Initialize OpenAI assistant
 if "assistant" not in st.session_state:
