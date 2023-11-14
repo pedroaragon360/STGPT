@@ -169,28 +169,28 @@ if prompt := st.chat_input("How can I help you?"):
         st.rerun()
 
 # Handle run status
+# Handle run status
 if hasattr(st.session_state.run, 'status'):
     if st.session_state.run.status == "running":
+        # Show a loading spinner while processing
         with st.spinner('Processing... Please wait.'):
             if st.session_state.retry_error < 3:
-                time.sleep(1)
-                st.rerun()
+                st.session_state.retry_error += 1
+                st.experimental_rerun()
     elif st.session_state.run.status == "failed":
         st.session_state.retry_error += 1
         with st.chat_message('assistant'):
             if st.session_state.retry_error < 3:
                 st.write("Run failed, retrying ......")
-                time.sleep(3)
-                st.rerun()
+                st.experimental_rerun()
             else:
                 st.error("FAILED: The OpenAI API is currently processing too many requests. Please try again later ......")
-
     elif st.session_state.run.status != "completed":
         st.session_state.run = client.beta.threads.runs.retrieve(
             thread_id=st.session_state.thread.id,
             run_id=st.session_state.run.id,
         )
         if st.session_state.retry_error < 3:
-            time.sleep(3)
-            st.rerun()
+            st.experimental_rerun()
+
 
