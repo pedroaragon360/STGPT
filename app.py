@@ -33,7 +33,7 @@ if "retry_error" not in st.session_state:
 # Set up the page
 st.set_page_config(page_title="Asistente")
 
-st.markdown('<div id="logoth" style="background: url(https://thevalley.es/lms/i/logow.png);  width: 200px;  height: 37px;  position: fixed;  background-repeat: no-repeat;  background-size: auto 100%;  top: 1em;  left: 1em;"></div>', unsafe_allow_html=True)
+st.markdown('<div id="logoth" style="z-index: 9999999; background: url(https://thevalley.es/lms/i/logow.png);  width: 200px;  height: 37px;  position: fixed;  background-repeat: no-repeat;  background-size: auto 100%;  top: 1em;  left: 1em;"></div>', unsafe_allow_html=True)
 
 #st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
 
