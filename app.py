@@ -38,7 +38,7 @@ st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
 st.sidebar.divider()
 
 # File uploader for CSV, XLS, XLSX
-uploaded_file = st.sidebar.file_uploader("Upload your file", type=["csv", "xls", "xlsx"])
+uploaded_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"])
 
 if uploaded_file is not None:
     # Determine the file type
@@ -49,7 +49,7 @@ if uploaded_file is not None:
         file_response = client.files.create(file=file_stream, purpose='assistants')
         st.session_state.file_id = file_response.id
 
-        st.sidebar.success(f"File uploaded successfully to OpenAI! File ID: {file_response.id}")
+        st.sidebar.success(f"Archivo subido. File ID: {file_response}")
         # Determine MIME type
         mime_type, _ = mimetypes.guess_type(uploaded_file.name)
         if mime_type is None:
