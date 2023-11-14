@@ -52,7 +52,7 @@ if uploaded_file is not None:
         file_stream = uploaded_file.getvalue()
         file_response = client.files.create(file=file_stream, purpose='assistants')
         st.session_state.file_id = file_response.id
-        st.session_state.file_name = file_response.name
+        st.session_state.file_name = uploaded_file.name
 
         st.sidebar.success(f"Archivo subido. File ID: {file_response.id}")
         # Determine MIME type
