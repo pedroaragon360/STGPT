@@ -132,7 +132,9 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
 if prompt := st.chat_input("How can I help you?"):
     with st.chat_message('user'):
         st.write(prompt)
-
+        
+    if "file_id" in st.session_state and "file_type" in st.session_state:
+        prompt = "Archivo subido con formato " + str(st.session_state.file_type) + ". " + prompt
     message_data = {
         "thread_id": st.session_state.thread.id,
         "role": "user",
@@ -142,7 +144,6 @@ if prompt := st.chat_input("How can I help you?"):
     # Include file ID in the request if available
     if "file_id" in st.session_state:
         message_data["file_ids"] = [st.session_state.file_id]
-        message_data["content"] = "Archivo subido con formato " + str(st.session_state.file_type) + str(message_data["content"])
         st.write(f"Sending message with associated file ID: {st.session_state.file_id}")
         st.session_state.pop('file_id')
     
