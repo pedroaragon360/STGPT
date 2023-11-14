@@ -119,7 +119,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                             pattern = r'\[.*?\]\(sandbox:.*?\)'
                             message_text = message_text.replace("\n", "\n\n")
                             message_text = re.sub(pattern, '', message_text)
-                            st.markdown("last": message_text)
+                            st.markdown("last: "+ message_text)
                             #st.write("Msg:", message)
     
                             # Check for and display image from annotations
