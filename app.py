@@ -172,13 +172,10 @@ if prompt := st.chat_input("How can I help you?"):
 # Handle run status
 if hasattr(st.session_state.run, 'status'):
     
-    if st.session_state.run.status == "running":
         # Show a loading spinner while processing
         if st.session_state.retry_error < 3:
             st.session_state.retry_error += 1
             st.experimental_rerun()
-    elif st.session_state.run.status == "queued":
-        st.write('queued')
     elif st.session_state.run.status == "failed":
         st.session_state.retry_error += 1
         with st.chat_message('assistant'):
@@ -188,10 +185,11 @@ if hasattr(st.session_state.run, 'status'):
             else:
                 st.error("FAILED: The OpenAI API is currently processing too many requests. Please try again later ......")
     elif st.session_state.run.status != "completed":
-        st.session_state.run = client.beta.threads.runs.retrieve(
-            thread_id=st.session_state.thread.id,
-            run_id=st.session_state.run.id,
-        )
+        with st.spinner(text='In progress'):
+            st.session_state.run = client.beta.threads.runs.retrieve(
+                thread_id=st.session_state.thread.id,
+                run_id=st.session_state.run.id,
+            )
         if st.session_state.retry_error < 3:
             st.experimental_rerun()
 
