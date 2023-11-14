@@ -45,7 +45,7 @@ if 'uploader_key' not in st.session_state:
 
 # File uploader for CSV, XLS, XLSX
 with tab2:
-    uploaded_file = st.file_uploader("", type=["csv", "xls", "json"], key=f'file_uploader_{st.session_state.uploader_key}')
+    uploaded_file = st.file_uploader("", type=["csv", "xls", "json", "xlsx"], key=f'file_uploader_{st.session_state.uploader_key}')
 
 with tab1:
     with st.chat_message('assistant'):
