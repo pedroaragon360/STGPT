@@ -45,6 +45,12 @@ st.markdown('<style>[data-baseweb=tab-list] {   position: fixed !important; top:
 if 'uploader_key' not in st.session_state:
     st.session_state.uploader_key = 0
 
+st.toast('Warming up...')
+st.error('Error message')
+st.warning('Warning message')
+st.info('Info message')
+st.success('Success message')
+
 # File uploader for CSV, XLS, XLSX
 with tab2:
     uploaded_file = st.file_uploader("", type=["csv", "xls", "json", "xlsx"], key=f'file_uploader_{st.session_state.uploader_key}')
