@@ -40,6 +40,9 @@ st.sidebar.markdown("Analiza un archivo de datos:")
 tab1, tab2 = st.tabs(["Tab 1", "Tab2"])
 tab1.write("this is tab 1")
 tab2.write("this is tab 2")
+with tab1.chat_message(message.role):
+    tab1.write("this is tab 1")
+
 
 
 # Initialize session state for the uploader key
