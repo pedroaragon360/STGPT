@@ -185,7 +185,7 @@ if hasattr(st.session_state.run, 'status'):
             else:
                 st.error("FAILED: The OpenAI API is currently processing too many requests. Please try again later ......")
     elif st.session_state.run.status != "completed":
-        with st.spinner(text='In progress'):
+        with st.sidebar.spinner(text='In progress'):
             st.session_state.run = client.beta.threads.runs.retrieve(
                 thread_id=st.session_state.thread.id,
                 run_id=st.session_state.run.id,
