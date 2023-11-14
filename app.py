@@ -111,7 +111,6 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                 st.text(steps.step_details.tool_calls[0].code_interpreter.input)
                                 st.divider()
                     #if steps.tools[0].type == 'code_interpreter':
-                        st.write(message)
                         # Handle text content
                         if hasattr(content_part, 'text') and content_part.text:
                             message_text = content_part.text.value
