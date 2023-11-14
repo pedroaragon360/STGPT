@@ -92,6 +92,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
 
                 for content_part in message.content:
                     # Handle text content
+                    st.write(content_part)
                     if hasattr(content_part, 'text') and content_part.text:
                         message_text = content_part.text.value
                         st.markdown(message_text)
