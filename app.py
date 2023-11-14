@@ -34,6 +34,8 @@ if "retry_error" not in st.session_state:
 st.set_page_config(page_title="Asistente")
 st.sidebar.image("https://thevalley.es/lms/i/logow.png")
 st.sidebar.divider()
+st.sidebar.markdown('<div style="background: url(https://thevalley.es/lms/i/logow.png); width: 200px; height: 100px; position:fixed; top:0;bottom:0;></div>', unsafe_allow_html=True)
+
 #st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
 st.sidebar.markdown("Analiza un archivo de datos:")
 
