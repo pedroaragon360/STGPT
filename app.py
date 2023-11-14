@@ -98,7 +98,8 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
         thread_id=st.session_state.thread.id
     )
     for iRun in reversed(st.session_state.runs.data):
-        st.write(iRun)
+        with st.chat_message("assistant"):
+            st.write(iRun)
 
     st.session_state.messages = client.beta.threads.messages.list(
         thread_id=st.session_state.thread.id
