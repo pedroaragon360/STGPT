@@ -1,23 +1,26 @@
+
 # Importing required packages
 import streamlit as st
 import openai
 import uuid
 import time
-import pandas as pd
-import io
-import re
-import base64
+
 from openai import OpenAI
-import mimetypes
-
-
-# Initialize OpenAI client
 client = OpenAI()
 
-# Your chosen model
+#MODEL = "gpt-3.5-turbo"
+#MODEL = "gpt-3.5-turbo-0301"
+#MODEL = "gpt-3.5-turbo-0613"
+#MODEL = "gpt-3.5-turbo-1106"
+#MODEL = "gpt-3.5-turbo-16k"
+#MODEL = "gpt-3.5-turbo-16k-0613"
+#MODEL = "gpt-4"
+#MODEL = "gpt-4-0613"
+#MODEL = "gpt-4-0613"
+#MODEL = "gpt-4-32k-0613"
 MODEL = "gpt-4-1106-preview"
+#MODEL = "gpt-4-vision-preview"
 
-# Initialize session state variables
 if "session_id" not in st.session_state:
     st.session_state.session_id = str(uuid.uuid4())
 
@@ -30,163 +33,111 @@ if "messages" not in st.session_state:
 if "retry_error" not in st.session_state:
     st.session_state.retry_error = 0
 
-# Set up the page
-st.set_page_config(page_title="Asistente")
-st.sidebar.image("https://thevalley.es/lms/i/logow.png")
+st.set_page_config(page_title="Learn Wardley Mapping")
+st.sidebar.title("Learn Wardley Mapping")
 st.sidebar.divider()
-#st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
-st.sidebar.markdown("Analiza un archivo de datos:")
+st.sidebar.markdown("Developed by Mark Craddock](https://twitter.com/mcraddock)", unsafe_allow_html=True)
+st.sidebar.markdown("Current Version: 0.0.3")
+st.sidebar.markdown("Using gpt-4-1106-preview API")
+st.sidebar.markdown(st.session_state.session_id)
+st.sidebar.divider()
 
-# Initialize session state for the uploader key
-if 'uploader_key' not in st.session_state:
-    st.session_state.uploader_key = 0
-
-# File uploader for CSV, XLS, XLSX
-uploaded_file = st.sidebar.file_uploader("", type=["csv", "xls", "json"], key=f'file_uploader_{st.session_state.uploader_key}')
-
-if uploaded_file is not None:
-    # Determine the file type
-    file_type = uploaded_file.type
-
-    try:
-        file_stream = uploaded_file.getvalue()
-        file_response = client.files.create(file=file_stream, purpose='assistants')
-        st.session_state.file_id = file_response.id
-        st.session_state.file_name = uploaded_file.name
-
-        st.sidebar.success(f"Archivo subido. File ID: {file_response.id}")
-        # Determine MIME type
-        mime_type, _ = mimetypes.guess_type(uploaded_file.name)
-        if mime_type is None:
-            mime_type = "application/octet-stream"  # Default for unknown types
-    
-        # Create download button
-        st.sidebar.download_button(
-            label="Descargar fichero subido",
-            data=file_stream,
-            file_name=uploaded_file.name,
-            mime=mime_type
-        )
-
-        # Reset the uploader by changing the key
-        st.session_state.uploader_key += 1
-       
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-        
-# Initialize OpenAI assistant
 if "assistant" not in st.session_state:
     openai.api_key = st.secrets["OPENAI_API_KEY"]
-    st.session_state.assistant = openai.beta.assistants.retrieve(st.secrets["OPENAI_ASSISTANT"])
-    st.session_state.thread = client.beta.threads.create(
-        metadata={'session_id': st.session_state.session_id}
-    )
 
-# Display chat messages
+    # Load the previously created assistant
+    st.session_state.assistant = openai.beta.assistants.retrieve(st.secrets["OPENAI_ASSISTANT"])
+
+    # Create a new thread for this session
+    st.session_state.thread = client.beta.threads.create(
+        metadata={
+            'session_id': st.session_state.session_id,
+        }
+    )
+ 
+# If the run is completed, display the messages
 elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == "completed":
+    # Retrieve the list of messages
     st.session_state.messages = client.beta.threads.messages.list(
         thread_id=st.session_state.thread.id
     )
+
+    for thread_message in st.session_state.messages.data:
+        for message_content in thread_message.content:
+            # Access the actual text content
+            message_content = message_content.text
+            annotations = message_content.annotations
+            citations = []
+            
+            # Iterate over the annotations and add footnotes
+            for index, annotation in enumerate(annotations):
+                # Replace the text with a footnote
+                message_content.value = message_content.value.replace(annotation.text, f' [{index}]')
+            
+                # Gather citations based on annotation attributes
+                if (file_citation := getattr(annotation, 'file_citation', None)):
+                    cited_file = client.files.retrieve(file_citation.file_id)
+                    citations.append(f'[{index}] {file_citation.quote} from {cited_file.filename}')
+                elif (file_path := getattr(annotation, 'file_path', None)):
+                    cited_file = client.files.retrieve(file_path.file_id)
+                    citations.append(f'[{index}] Click <here> to download {cited_file.filename}')
+                    # Note: File download functionality not implemented above for brevity
+
+            # Add footnotes to the end of the message before displaying to user
+            message_content.value += '\n' + '\n'.join(citations)
+
+    # Display messages
     for message in reversed(st.session_state.messages.data):
         if message.role in ["user", "assistant"]:
             with st.chat_message(message.role):
-
                 for content_part in message.content:
-                    # Handle text content
-                    if hasattr(content_part, 'text') and content_part.text:
-                        message_text = content_part.text.value
-                        pattern = r'\[.*?\]\(sandbox:.*?\)'
-                        message_text = re.sub(pattern, '', message_text)
-                        st.markdown(message_text)
-                        #st.write("Msg:", message)
+                    message_text = content_part.text.value
+                    st.markdown(message_text)
 
-                        # Check for and display image from annotations
-                        if content_part.text.annotations:
-                            for annotation in content_part.text.annotations:
-                                if hasattr(annotation, 'file_path') and annotation.file_path:
-                                    file_id = annotation.file_path.file_id
-                                    # Retrieve the image content using the file ID
-                                    file_name = client.files.retrieve(file_id).filename #eg. /mnt/data/archivo.json
-                                    response = client.files.with_raw_response.retrieve_content(file_id)
-                                    if response.status_code == 200:
-                                        b64_image = base64.b64encode(response.content).decode()
-                                    
-                                        # Guess the MIME type of the file based on its extension
-                                        mime_type, _ = mimetypes.guess_type(file_name)
-                                        if mime_type is None:
-                                            mime_type = "application/octet-stream"  # Default for unknown types
-                                    
-                                        # Extract just the filename from the path
-                                        filename = file_name.split('/')[-1]
-                                    
-                                        # Create a download button with the correct MIME type and filename
-                                        href = f'<a style="border: 1px solid white;background: white; color: black; padding: 0.4em 0.8em; border-radius: 1em;" href="data:{mime_type};base64,{b64_image}" download="{filename}">Descargar {filename}</a>'
-                                        st.markdown(href, unsafe_allow_html=True)
-                                    else:
-                                        st.error("Failed to retrieve file")
-                                    
-                    # Handle direct image content
-                    if hasattr(content_part, 'image') and content_part.image:
-                        image_url = content_part.image.url
-                        st.write("IMG API Response:", content_part.image)
-                # Check for image file and retrieve the file ID
-                    if hasattr(content_part, 'image_file') and content_part.image_file:
-                        image_file_id = content_part.image_file.file_id
-                        # Retrieve the image content using the file ID
-                        response = client.files.with_raw_response.retrieve_content(image_file_id)
-                        if response.status_code == 200:
-                            st.image(response.content)
-                        else:
-                            st.error("Failed to retrieve image")
-
-# Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
-
-    if "file_id" in st.session_state and "file_name" in st.session_state:
-        prompt = "Renombra el archivo " + str(st.session_state.file_id) + " por " + str(st.session_state.file_name) + ". " + prompt
-    message_data = {
-        "thread_id": st.session_state.thread.id,
-        "role": "user",
-        "content": prompt
-    }
     with st.chat_message('user'):
         st.write(prompt)
-        
-    # Include file ID in the request if available
-    if "file_id" in st.session_state:
-        message_data["file_ids"] = [st.session_state.file_id]
-        st.session_state.pop('file_id')
-    
-    st.session_state.messages = client.beta.threads.messages.create(**message_data)
 
+    # Add message to the thread
+    st.session_state.messages = client.beta.threads.messages.create(
+        thread_id=st.session_state.thread.id,
+        role="user",
+        content=prompt
+    )
+
+    # Do a run to process the messages in the thread
     st.session_state.run = client.beta.threads.runs.create(
         thread_id=st.session_state.thread.id,
         assistant_id=st.session_state.assistant.id,
     )
-    st.write(st.session_state.run.status)
     if st.session_state.retry_error < 3:
-        time.sleep(1)
+        time.sleep(1) # Wait 1 second before checking run status
         st.rerun()
-
-# Handle run status
+                    
+# Check if 'run' object has 'status' attribute
 if hasattr(st.session_state.run, 'status'):
+    # Handle the 'running' status
     if st.session_state.run.status == "running":
         with st.chat_message('assistant'):
             st.write("Thinking ......")
         if st.session_state.retry_error < 3:
-            time.sleep(1)
+            time.sleep(1)  # Short delay to prevent immediate rerun, adjust as needed
             st.rerun()
+
+    # Handle the 'failed' status
     elif st.session_state.run.status == "failed":
         st.session_state.retry_error += 1
         with st.chat_message('assistant'):
             if st.session_state.retry_error < 3:
                 st.write("Run failed, retrying ......")
-                time.sleep(3)
+                time.sleep(3)  # Longer delay before retrying
                 st.rerun()
             else:
                 st.error("FAILED: The OpenAI API is currently processing too many requests. Please try again later ......")
 
+    # Handle any status that is not 'completed'
     elif st.session_state.run.status != "completed":
+        # Attempt to retrieve the run again, possibly redundant if there's no other status but 'running' or 'failed'
         st.session_state.run = client.beta.threads.runs.retrieve(
             thread_id=st.session_state.thread.id,
             run_id=st.session_state.run.id,
