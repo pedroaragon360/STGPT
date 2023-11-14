@@ -29,7 +29,9 @@ if "messages" not in st.session_state:
 if "retry_error" not in st.session_state:
     st.session_state.retry_error = 0
 
-    
+if 'uploaded_file' not in st.session_state:
+    st.session_state.uploaded_file = None
+
 # Set up the page
 st.set_page_config(page_title="Asistente")
 st.sidebar.image("https://thevalley.es/lms/i/logow.png")
@@ -39,39 +41,35 @@ st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
 st.sidebar.divider()
 
 # File uploader for CSV, XLS, XLSX
+new_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"])
 
-st.session_state.uploaded_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"])
+if new_file is not None:
+    st.session_state.uploaded_file = new_file
 
 if st.session_state.uploaded_file is not None:
-    if "file_processed" not in st.session_state or not st.session_state.file_processed:
-        # Process and upload the file only once
-        try:
-            # ... [file processing and uploading code] ...
-            st.session_state.file_processed = True
-            file_type = uploaded_file.type
-            file_stream = uploaded_file.getvalue()
-            file_response = client.files.create(file=file_stream, purpose='assistants')
-            st.session_state.file_id = file_response.id
-    
-            st.sidebar.success(f"Archivo subido. File ID: {file_response}")
-            
-            # Determine MIME type
-            mime_type, _ = mimetypes.guess_type(uploaded_file.name)
-            if mime_type is None:
-                mime_type = "application/octet-stream"  # Default for unknown types
+    uploaded_file = st.session_state.uploaded_file
+    file_type = uploaded_file.type
+
+    try:
+        file_stream = uploaded_file.getvalue()
+        file_response = client.files.create(file=file_stream, purpose='assistants')
+        st.session_state.file_id = file_response.id
+
+        st.sidebar.success(f"Archivo subido. File ID: {file_response}")
         
-            # Create download button
-            st.sidebar.download_button(
-                label="Descargar fichero subido",
-                data=file_stream,
-                file_name=uploaded_file.name,
-                mime=mime_type
-            )
-           
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-
-
+        mime_type, _ = mimetypes.guess_type(uploaded_file.name)
+        if mime_type is None:
+            mime_type = "application/octet-stream"
+        
+        st.sidebar.download_button(
+            label="Descargar fichero subido",
+            data=file_stream,
+            file_name=uploaded_file.name,
+            mime=mime_type
+        )
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+        
 # Initialize OpenAI assistant
 if "assistant" not in st.session_state:
     openai.api_key = st.secrets["OPENAI_API_KEY"]
@@ -104,16 +102,11 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                     # Retrieve the image content using the file ID
                                     response = client.files.with_raw_response.retrieve_content(file_id)
                                     if response.status_code == 200:
-                                        # Display the image
-                                        #st.write("Img on text:")
                                         #st.image(response.content)
-                                         # Convert the image bytes to
                                         b64_image = base64.b64encode(response.content).decode()
-                                        
                                         # Create a download button
                                         href = f'<a href="data:file/png;base64,{b64_image}" download="downloaded_image.png">Descargar imagen</a>'
                                         st.markdown(href, unsafe_allow_html=True)
-
                                     else:
                                         st.error("Failed to retrieve image")
                                     
@@ -127,8 +120,6 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                         # Retrieve the image content using the file ID
                         response = client.files.with_raw_response.retrieve_content(image_file_id)
                         if response.status_code == 200:
-                            # Display the image
-                            #st.write("Direct image file:")
                             st.image(response.content)
                         else:
                             st.error("Failed to retrieve image")
@@ -187,5 +178,3 @@ if hasattr(st.session_state.run, 'status'):
         if st.session_state.retry_error < 3:
             time.sleep(3)
             st.rerun()
-
-
