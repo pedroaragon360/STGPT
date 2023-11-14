@@ -98,7 +98,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
         thread_id=st.session_state.thread.id
     )
     with st.chat_message("assistant"):
-        st.write(st.session_state.run)
+        st.write(st.session_state.run.id)
         for iRun in reversed(st.session_state.runs.data):
             #st.write(iRun)
             if iRun.tools[0].type == 'code_interpreter':
