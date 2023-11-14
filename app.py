@@ -37,12 +37,7 @@ st.sidebar.divider()
 #st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
 st.sidebar.markdown("Analiza un archivo de datos:")
 
-tab1, tab2 = st.tabs(["TConversación", "Sube un fichero"])
-
-with tab1:
-    st.write("this is tab 1")
-
-
+tab1, tab2 = st.tabs(["Conversación", "Sube un fichero"])
 
 # Initialize session state for the uploader key
 if 'uploader_key' not in st.session_state:
