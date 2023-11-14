@@ -35,9 +35,6 @@ st.set_page_config(page_title="Asistente")
 
 st.markdown('<div id="logoth" style="z-index: 9999999; background: url(https://thevalley.es/lms/i/logow.png);  width: 200px;  height: 37px;  position: fixed;  background-repeat: no-repeat;  background-size: auto 100%;  top: 1em;  left: 1em;"></div>', unsafe_allow_html=True)
 
-with tab1:
-    with st.chat_message('assistant'):
-        st.write('¡Hola! Soy el asistente GPT de The Valley, ¿cómo te puedo ayudar?')
 #st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs(["Conversación", "Sube un fichero"])
@@ -50,6 +47,10 @@ if 'uploader_key' not in st.session_state:
 with tab2:
     uploaded_file = st.file_uploader("", type=["csv", "xls", "json"], key=f'file_uploader_{st.session_state.uploader_key}')
 
+with tab1:
+    with st.chat_message('assistant'):
+        st.write('¡Hola! Soy el asistente GPT de The Valley, ¿cómo te puedo ayudar?')
+        
 if uploaded_file is not None:
     # Determine the file type
     file_type = uploaded_file.type
