@@ -46,7 +46,7 @@ if uploaded_file is not None:
 
     try:
         file_stream = uploaded_file.getvalue()
-        file_response = client.files.create(file=file_stream, purpose='assistants',file_id='prueba.csv')
+        file_response = client.files.create(file=file_stream, purpose='assistants')
         st.session_state.file_id = file_response.id
 
         st.sidebar.success(f"Archivo subido. File ID: {file_response}")
