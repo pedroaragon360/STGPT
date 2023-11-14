@@ -30,11 +30,11 @@ if "retry_error" not in st.session_state:
     st.session_state.retry_error = 0
 
 # Set up the page
-st.set_page_config(page_title="Lección #1: El éxito en la innovación")
-st.sidebar.title("Lección #1")
+st.set_page_config(page_title="Asistente")
+st.sidebar.image("https://thevalley.es/lms/i/logow.png")
+st.sidebar.title("Práctica")
 st.sidebar.divider()
 st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
-st.sidebar.markdown("Asistente GPT")
 st.sidebar.divider()
 
 # File uploader for CSV, XLS, XLSX
