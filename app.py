@@ -156,10 +156,10 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                     
                 with st.chat_message("assistant"):
                     run_steps = client.beta.threads.runs.steps.list(thread_id=st.session_state.thread.id,run_id=st.session_state.run.id  )
-                    st.write(run_steps.data)
+                    #st.write(run_steps.data)
                     for steps in reversed(run_steps.data):
                         if hasattr(steps.step_details, 'tool_calls'):
-                            st.write(steps.step_details.tool_calls[0].code_interpreter.input)
+                            st.text(steps.step_details.tool_calls[0].code_interpreter.input)
                     #if steps.tools[0].type == 'code_interpreter':
 
 
