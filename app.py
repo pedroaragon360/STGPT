@@ -149,61 +149,60 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                             st.error("Failed to retrieve image")
 
 # Chat input and message creation with file ID
-with tab1:
-    if prompt := st.chat_input("How can I help you?"):
-    
-        if "file_id" in st.session_state and "file_name" in st.session_state:
-            prompt = "Renombra el archivo " + str(st.session_state.file_id) + " por " + str(st.session_state.file_name) + ". " + prompt
-        message_data = {
-            "thread_id": st.session_state.thread.id,
-            "role": "user",
-            "content": prompt
-        }
-        with st.chat_message('user'):
-            st.write(prompt)
-            
-        # Include file ID in the request if available
-        if "file_id" in st.session_state:
-            message_data["file_ids"] = [st.session_state.file_id]
-            st.session_state.pop('file_id')
+if prompt := st.chat_input("How can I help you?"):
+
+    if "file_id" in st.session_state and "file_name" in st.session_state:
+        prompt = "Renombra el archivo " + str(st.session_state.file_id) + " por " + str(st.session_state.file_name) + ". " + prompt
+    message_data = {
+        "thread_id": st.session_state.thread.id,
+        "role": "user",
+        "content": prompt
+    }
+    with st.chat_message('user'):
+        st.write(prompt)
         
-        st.session_state.messages = client.beta.threads.messages.create(**message_data)
+    # Include file ID in the request if available
+    if "file_id" in st.session_state:
+        message_data["file_ids"] = [st.session_state.file_id]
+        st.session_state.pop('file_id')
     
-        st.session_state.run = client.beta.threads.runs.create(
-            thread_id=st.session_state.thread.id,
-            assistant_id=st.session_state.assistant.id,
-        )
-        st.write(st.session_state.run.status)
+    st.session_state.messages = client.beta.threads.messages.create(**message_data)
+
+    st.session_state.run = client.beta.threads.runs.create(
+        thread_id=st.session_state.thread.id,
+        assistant_id=st.session_state.assistant.id,
+    )
+    st.write(st.session_state.run.status)
+    if st.session_state.retry_error < 3:
+        time.sleep(1)
+        st.rerun()
+
+# Handle run status
+if hasattr(st.session_state.run, 'status'):
+    if st.session_state.run.status == "running":
+        with st.chat_message('assistant'):
+            st.write("Thinking ......")
         if st.session_state.retry_error < 3:
             time.sleep(1)
             st.rerun()
-    
-    # Handle run status
-    if hasattr(st.session_state.run, 'status'):
-        if st.session_state.run.status == "running":
-            with st.chat_message('assistant'):
-                st.write("Thinking ......")
+            
+    elif st.session_state.run.status == "failed":
+        st.session_state.retry_error += 1
+        with st.chat_message('assistant'):
+            if hasattr(st.session_state.run, 'last_error'):
+                st.write("Atención: " + st.session_state.run.last_error.message)
             if st.session_state.retry_error < 3:
-                time.sleep(1)
-                st.rerun()
-                
-        elif st.session_state.run.status == "failed":
-            st.session_state.retry_error += 1
-            with st.chat_message('assistant'):
-                if hasattr(st.session_state.run, 'last_error'):
-                    st.write("Atención: " + st.session_state.run.last_error.message)
-                if st.session_state.retry_error < 3:
-                    st.write("Intentándolo de nuevo ......")
-                    time.sleep(3)
-                    st.rerun()
-                else:
-                    st.error("Lo sentimos, no se ha podido procesar: " + st.session_state.run.last_error.message)
-    
-        elif st.session_state.run.status != "completed":
-            st.session_state.run = client.beta.threads.runs.retrieve(
-                thread_id=st.session_state.thread.id,
-                run_id=st.session_state.run.id,
-            )
-            if st.session_state.retry_error < 3:
+                st.write("Intentándolo de nuevo ......")
                 time.sleep(3)
                 st.rerun()
+            else:
+                st.error("Lo sentimos, no se ha podido procesar: " + st.session_state.run.last_error.message)
+
+    elif st.session_state.run.status != "completed":
+        st.session_state.run = client.beta.threads.runs.retrieve(
+            thread_id=st.session_state.thread.id,
+            run_id=st.session_state.run.id,
+        )
+        if st.session_state.retry_error < 3:
+            time.sleep(3)
+            st.rerun()
