@@ -156,7 +156,7 @@ if prompt := st.chat_input("How can I help you?"):
     if "file_id" in st.session_state:
         message_data["file_ids"] = [st.session_state.file_id]
         st.session_state.pop('file_id')
-    
+
     st.session_state.messages = client.beta.threads.messages.create(**message_data)
 
     st.session_state.run = client.beta.threads.runs.create(
