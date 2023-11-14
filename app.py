@@ -38,11 +38,9 @@ st.sidebar.divider()
 st.sidebar.markdown("Analiza un archivo de datos:")
 
 tab1, tab2 = st.tabs(["Tab 1", "Tab2"])
-tab1.write("this is tab 1")
-tab2.write("this is tab 2")
+
 with tab1:
-    st.chat_message("assistant")
-st.write("this is tab 1")
+    st.write("this is tab 1")
 
 
 
@@ -98,55 +96,56 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
     )
     for message in reversed(st.session_state.messages.data):
         if message.role in ["user", "assistant"]:
-            with st.chat_message(message.role):
-
-                for content_part in message.content:
-                    # Handle text content
-                    if hasattr(content_part, 'text') and content_part.text:
-                        message_text = content_part.text.value
-                        pattern = r'\[.*?\]\(sandbox:.*?\)'
-                        message_text = re.sub(pattern, '', message_text)
-                        st.markdown(message_text)
-                        #st.write("Msg:", message)
-
-                        # Check for and display image from annotations
-                        if content_part.text.annotations:
-                            for annotation in content_part.text.annotations:
-                                if hasattr(annotation, 'file_path') and annotation.file_path:
-                                    file_id = annotation.file_path.file_id
-                                    # Retrieve the image content using the file ID
-                                    file_name = client.files.retrieve(file_id).filename #eg. /mnt/data/archivo.json
-                                    response = client.files.with_raw_response.retrieve_content(file_id)
-                                    if response.status_code == 200:
-                                        b64_image = base64.b64encode(response.content).decode()
-                                    
-                                        # Guess the MIME type of the file based on its extension
-                                        mime_type, _ = mimetypes.guess_type(file_name)
-                                        if mime_type is None:
-                                            mime_type = "application/octet-stream"  # Default for unknown types
-                                    
-                                        # Extract just the filename from the path
-                                        filename = file_name.split('/')[-1]
-                                    
-                                        # Create a download button with the correct MIME type and filename
-                                        href = f'<a style="border: 1px solid white;background: white; color: black; padding: 0.4em 0.8em; border-radius: 1em;" href="data:{mime_type};base64,{b64_image}" download="{filename}">Descargar {filename}</a>'
-                                        st.markdown(href, unsafe_allow_html=True)
-                                    else:
-                                        st.error("Failed to retrieve file")
-                                    
-                    # Handle direct image content
-                    if hasattr(content_part, 'image') and content_part.image:
-                        image_url = content_part.image.url
-                        st.write("IMG API Response:", content_part.image)
-                # Check for image file and retrieve the file ID
-                    if hasattr(content_part, 'image_file') and content_part.image_file:
-                        image_file_id = content_part.image_file.file_id
-                        # Retrieve the image content using the file ID
-                        response = client.files.with_raw_response.retrieve_content(image_file_id)
-                        if response.status_code == 200:
-                            st.image(response.content)
-                        else:
-                            st.error("Failed to retrieve image")
+            with tab1:
+                with st.chat_message(message.role):
+    
+                    for content_part in message.content:
+                        # Handle text content
+                        if hasattr(content_part, 'text') and content_part.text:
+                            message_text = content_part.text.value
+                            pattern = r'\[.*?\]\(sandbox:.*?\)'
+                            message_text = re.sub(pattern, '', message_text)
+                            st.markdown(message_text)
+                            #st.write("Msg:", message)
+    
+                            # Check for and display image from annotations
+                            if content_part.text.annotations:
+                                for annotation in content_part.text.annotations:
+                                    if hasattr(annotation, 'file_path') and annotation.file_path:
+                                        file_id = annotation.file_path.file_id
+                                        # Retrieve the image content using the file ID
+                                        file_name = client.files.retrieve(file_id).filename #eg. /mnt/data/archivo.json
+                                        response = client.files.with_raw_response.retrieve_content(file_id)
+                                        if response.status_code == 200:
+                                            b64_image = base64.b64encode(response.content).decode()
+                                        
+                                            # Guess the MIME type of the file based on its extension
+                                            mime_type, _ = mimetypes.guess_type(file_name)
+                                            if mime_type is None:
+                                                mime_type = "application/octet-stream"  # Default for unknown types
+                                        
+                                            # Extract just the filename from the path
+                                            filename = file_name.split('/')[-1]
+                                        
+                                            # Create a download button with the correct MIME type and filename
+                                            href = f'<a style="border: 1px solid white;background: white; color: black; padding: 0.4em 0.8em; border-radius: 1em;" href="data:{mime_type};base64,{b64_image}" download="{filename}">Descargar {filename}</a>'
+                                            st.markdown(href, unsafe_allow_html=True)
+                                        else:
+                                            st.error("Failed to retrieve file")
+                                        
+                        # Handle direct image content
+                        if hasattr(content_part, 'image') and content_part.image:
+                            image_url = content_part.image.url
+                            st.write("IMG API Response:", content_part.image)
+                    # Check for image file and retrieve the file ID
+                        if hasattr(content_part, 'image_file') and content_part.image_file:
+                            image_file_id = content_part.image_file.file_id
+                            # Retrieve the image content using the file ID
+                            response = client.files.with_raw_response.retrieve_content(image_file_id)
+                            if response.status_code == 200:
+                                st.image(response.content)
+                            else:
+                                st.error("Failed to retrieve image")
 
 # Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
@@ -158,9 +157,10 @@ if prompt := st.chat_input("How can I help you?"):
         "role": "user",
         "content": prompt
     }
-    with st.chat_message('user'):
-        st.write(prompt)
-        
+    with tab1:
+        with st.chat_message('user'):
+            st.write(prompt)
+            
     # Include file ID in the request if available
     if "file_id" in st.session_state:
         message_data["file_ids"] = [st.session_state.file_id]
@@ -180,11 +180,12 @@ if prompt := st.chat_input("How can I help you?"):
 # Handle run status
 if hasattr(st.session_state.run, 'status'):
     if st.session_state.run.status == "running":
-        with st.chat_message('assistant'):
-            st.write("Thinking ......")
-        if st.session_state.retry_error < 3:
-            time.sleep(1)
-            st.rerun()
+        with tab1:
+            with st.chat_message('assistant'):
+                st.write("Thinking ......")
+            if st.session_state.retry_error < 3:
+                time.sleep(1)
+                st.rerun()
             
     elif st.session_state.run.status == "failed":
         st.session_state.retry_error += 1
