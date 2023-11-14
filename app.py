@@ -29,12 +29,6 @@ if "messages" not in st.session_state:
 if "retry_error" not in st.session_state:
     st.session_state.retry_error = 0
 
-# Initialize session state variables
-if 'uploaded_file' not in st.session_state:
-    st.session_state.uploaded_file = None
-if 'file_processed' not in st.session_state:
-    st.session_state.file_processed = False
-    
 # Set up the page
 st.set_page_config(page_title="Asistente")
 st.sidebar.image("https://thevalley.es/lms/i/logow.png")
@@ -43,35 +37,47 @@ st.sidebar.divider()
 st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
 st.sidebar.divider()
 
+# Button to trigger file uploader
+if "show_uploader" not in st.session_state:
+    st.session_state.show_uploader = False
+
+if st.sidebar.button("Uploader"):
+    st.session_state.show_uploader = True
+
 # File uploader for CSV, XLS, XLSX
-if st.session_state.uploaded_file is None:
-    new_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"], key="file_uploader")
-    st.session_state.uploaded_file = new_file
+if st.session_state.show_uploader:
+    uploaded_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"])
 
-if st.session_state.uploaded_file is not None:
-    uploaded_file = st.session_state.uploaded_file
-    file_type = uploaded_file.type
+    if uploaded_file is not None:
+        # Determine the file type
+        file_type = uploaded_file.type
 
-    try:
-        file_stream = uploaded_file.getvalue()
-        file_response = client.files.create(file=file_stream, purpose='assistants')
-        st.session_state.file_id = file_response.id
+        try:
+            file_stream = uploaded_file.getvalue()
+            file_response = client.files.create(file=file_stream, purpose='assistants')
+            st.session_state.file_id = file_response.id
 
-        st.sidebar.success(f"Archivo subido. File ID: {file_response.id}")
+            st.sidebar.success(f"Archivo subido. File ID: {file_response.id}")
+            # Determine MIME type
+            mime_type, _ = mimetypes.guess_type(uploaded_file.name)
+            if mime_type is None:
+                mime_type = "application/octet-stream"  # Default for unknown types
         
-        mime_type, _ = mimetypes.guess_type(uploaded_file.name)
-        if mime_type is None:
-            mime_type = "application/octet-stream"
-        
-        st.sidebar.download_button(
-            label="Descargar fichero subido",
-            data=file_stream,
-            file_name=uploaded_file.name,
-            mime=mime_type
-        )
-        
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+            # Create download button
+            st.sidebar.download_button(
+                label="Descargar fichero subido",
+                data=file_stream,
+                file_name=uploaded_file.name,
+                mime=mime_type
+            )
+
+            # Hide the uploader after file is uploaded
+            st.session_state.show_uploader = False
+           
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+
+
         
 # Initialize OpenAI assistant
 if "assistant" not in st.session_state:
