@@ -110,7 +110,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                             #st.write(run_steps.data)
                             for steps in reversed(run_steps.data):
                                 if hasattr(steps.step_details, 'tool_calls'):
-                                    st.code(steps.step_details.tool_calls[0].code_interpreter.input)ç
+                                    st.code(steps.step_details.tool_calls[0].code_interpreter.input)
                                     st.caption('Código generado por Code Interpreter:')
                                     
                     #if steps.tools[0].type == 'code_interpreter':
