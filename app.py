@@ -1,147 +1,110 @@
-
-# Importing required packages
-import streamlit as st
 import openai
-import uuid
-import time
+import streamlit as st
+from streamlit_chat import message
 
-from openai import OpenAI
-client = OpenAI()
+# Setting page title and header
+st.set_page_config(page_title="AVA", page_icon=":robot_face:")
+st.markdown("<h1 style='text-align: center;'>AVA - a totally harmless chatbot 😬</h1>", unsafe_allow_html=True)
 
-#MODEL = "gpt-3.5-turbo"
-#MODEL = "gpt-3.5-turbo-0301"
-#MODEL = "gpt-3.5-turbo-0613"
-#MODEL = "gpt-3.5-turbo-1106"
-#MODEL = "gpt-3.5-turbo-16k"
-#MODEL = "gpt-3.5-turbo-16k-0613"
-#MODEL = "gpt-4"
-#MODEL = "gpt-4-0613"
-#MODEL = "gpt-4-0613"
-#MODEL = "gpt-4-32k-0613"
-MODEL = "gpt-4-1106-preview"
-#MODEL = "gpt-4-vision-preview"
+# Set org ID and API key
+openai.organization = st.secrets["OPENAI_ORG"]
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-if "session_id" not in st.session_state:
-    st.session_state.session_id = str(uuid.uuid4())
+# Initialise session state variables
+if 'generated' not in st.session_state:
+    st.session_state['generated'] = []
+if 'past' not in st.session_state:
+    st.session_state['past'] = []
+if 'messages' not in st.session_state:
+    st.session_state['messages'] = [
+        {"role": "system", "content": "You are a helpful assistant."}
+    ]
+if 'model_name' not in st.session_state:
+    st.session_state['model_name'] = []
+if 'cost' not in st.session_state:
+    st.session_state['cost'] = []
+if 'total_tokens' not in st.session_state:
+    st.session_state['total_tokens'] = []
+if 'total_cost' not in st.session_state:
+    st.session_state['total_cost'] = 0.0
 
-if "run" not in st.session_state:
-    st.session_state.run = {"status": None}
+# Sidebar - let user choose model, show total cost of current conversation, and let user clear the current conversation
+st.sidebar.title("Sidebar")
+model_name = st.sidebar.radio("Choose a model:", ("GPT-3.5", "GPT-4"))
+counter_placeholder = st.sidebar.empty()
+counter_placeholder.write(f"Total cost of this conversation: ${st.session_state['total_cost']:.5f}")
+clear_button = st.sidebar.button("Clear Conversation", key="clear")
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# Map model names to OpenAI model IDs
+if model_name == "GPT-3.5":
+    model = "gpt-3.5-turbo"
+else:
+    model = "gpt-4"
 
-if "retry_error" not in st.session_state:
-    st.session_state.retry_error = 0
+# reset everything
+if clear_button:
+    st.session_state['generated'] = []
+    st.session_state['past'] = []
+    st.session_state['messages'] = [
+        {"role": "system", "content": "You are a helpful assistant."}
+    ]
+    st.session_state['number_tokens'] = []
+    st.session_state['model_name'] = []
+    st.session_state['cost'] = []
+    st.session_state['total_cost'] = 0.0
+    st.session_state['total_tokens'] = []
+    counter_placeholder.write(f"Total cost of this conversation: ${st.session_state['total_cost']:.5f}")
 
-st.set_page_config(page_title="Learn Wardley Mapping")
-st.sidebar.title("Learn Wardley Mapping")
-st.sidebar.divider()
-st.sidebar.markdown("Developed by Mark Craddock](https://twitter.com/mcraddock)", unsafe_allow_html=True)
-st.sidebar.markdown("Current Version: 0.0.3")
-st.sidebar.markdown("Using gpt-4-1106-preview API")
-st.sidebar.markdown(st.session_state.session_id)
-st.sidebar.divider()
 
-if "assistant" not in st.session_state:
-    openai.api_key = st.secrets["OPENAI_API_KEY"]
+# generate a response
+def generate_response(prompt):
+    st.session_state['messages'].append({"role": "user", "content": prompt})
 
-    # Load the previously created assistant
-    st.session_state.assistant = openai.beta.assistants.retrieve(st.secrets["OPENAI_ASSISTANT"])
-
-    # Create a new thread for this session
-    st.session_state.thread = client.beta.threads.create(
-        metadata={
-            'session_id': st.session_state.session_id,
-        }
+    completion = openai.ChatCompletion.create(
+        model=model,
+        messages=st.session_state['messages']
     )
- 
-# If the run is completed, display the messages
-elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == "completed":
-    # Retrieve the list of messages
-    st.session_state.messages = client.beta.threads.messages.list(
-        thread_id=st.session_state.thread.id
-    )
+    response = completion.choices[0].message.content
+    st.session_state['messages'].append({"role": "assistant", "content": response})
 
-    for thread_message in st.session_state.messages.data:
-        for message_content in thread_message.content:
-            # Access the actual text content
-            message_content = message_content.text
-            annotations = message_content.annotations
-            citations = []
-            
-            # Iterate over the annotations and add footnotes
-            for index, annotation in enumerate(annotations):
-                # Replace the text with a footnote
-                message_content.value = message_content.value.replace(annotation.text, f' [{index}]')
-            
-                # Gather citations based on annotation attributes
-                if (file_citation := getattr(annotation, 'file_citation', None)):
-                    cited_file = client.files.retrieve(file_citation.file_id)
-                    citations.append(f'[{index}] {file_citation.quote} from {cited_file.filename}')
-                elif (file_path := getattr(annotation, 'file_path', None)):
-                    cited_file = client.files.retrieve(file_path.file_id)
-                    citations.append(f'[{index}] Click <here> to download {cited_file.filename}')
-                    # Note: File download functionality not implemented above for brevity
+    # print(st.session_state['messages'])
+    total_tokens = completion.usage.total_tokens
+    prompt_tokens = completion.usage.prompt_tokens
+    completion_tokens = completion.usage.completion_tokens
+    return response, total_tokens, prompt_tokens, completion_tokens
 
-            # Add footnotes to the end of the message before displaying to user
-            message_content.value += '\n' + '\n'.join(citations)
 
-    # Display messages
-    for message in reversed(st.session_state.messages.data):
-        if message.role in ["user", "assistant"]:
-            with st.chat_message(message.role):
-                for content_part in message.content:
-                    message_text = content_part.text.value
-                    st.markdown(message_text)
+# container for chat history
+response_container = st.container()
+# container for text box
+container = st.container()
 
-if prompt := st.chat_input("How can I help you?"):
-    with st.chat_message('user'):
-        st.write(prompt)
+with container:
+    with st.form(key='my_form', clear_on_submit=True):
+        user_input = st.text_area("You:", key='input', height=100)
+        submit_button = st.form_submit_button(label='Send')
 
-    # Add message to the thread
-    st.session_state.messages = client.beta.threads.messages.create(
-        thread_id=st.session_state.thread.id,
-        role="user",
-        content=prompt
-    )
+    if submit_button and user_input:
+        output, total_tokens, prompt_tokens, completion_tokens = generate_response(user_input)
+        st.session_state['past'].append(user_input)
+        st.session_state['generated'].append(output)
+        st.session_state['model_name'].append(model_name)
+        st.session_state['total_tokens'].append(total_tokens)
 
-    # Do a run to process the messages in the thread
-    st.session_state.run = client.beta.threads.runs.create(
-        thread_id=st.session_state.thread.id,
-        assistant_id=st.session_state.assistant.id,
-    )
-    if st.session_state.retry_error < 3:
-        time.sleep(1) # Wait 1 second before checking run status
-        st.rerun()
-                    
-# Check if 'run' object has 'status' attribute
-if hasattr(st.session_state.run, 'status'):
-    # Handle the 'running' status
-    if st.session_state.run.status == "running":
-        with st.chat_message('assistant'):
-            st.write("Thinking ......")
-        if st.session_state.retry_error < 3:
-            time.sleep(1)  # Short delay to prevent immediate rerun, adjust as needed
-            st.rerun()
+        # from https://openai.com/pricing#language-models
+        if model_name == "GPT-3.5":
+            cost = total_tokens * 0.002 / 1000
+        else:
+            cost = (prompt_tokens * 0.03 + completion_tokens * 0.06) / 1000
 
-    # Handle the 'failed' status
-    elif st.session_state.run.status == "failed":
-        st.session_state.retry_error += 1
-        with st.chat_message('assistant'):
-            if st.session_state.retry_error < 3:
-                st.write("Run failed, retrying ......")
-                time.sleep(3)  # Longer delay before retrying
-                st.rerun()
-            else:
-                st.error("FAILED: The OpenAI API is currently processing too many requests. Please try again later ......")
+        st.session_state['cost'].append(cost)
+        st.session_state['total_cost'] += cost
 
-    # Handle any status that is not 'completed'
-    elif st.session_state.run.status != "completed":
-        # Attempt to retrieve the run again, possibly redundant if there's no other status but 'running' or 'failed'
-        st.session_state.run = client.beta.threads.runs.retrieve(
-            thread_id=st.session_state.thread.id,
-            run_id=st.session_state.run.id,
-        )
-        if st.session_state.retry_error < 3:
-            time.sleep(3)
-            st.rerun()
+if st.session_state['generated']:
+    with response_container:
+        for i in range(len(st.session_state['generated'])):
+            message(st.session_state["past"][i], is_user=True, key=str(i) + '_user')
+            message(st.session_state["generated"][i], key=str(i))
+            st.write(
+                f"Model used: {st.session_state['model_name'][i]}; Number of tokens: {st.session_state['total_tokens'][i]}; Cost: ${st.session_state['cost'][i]:.5f}")
+            counter_placeholder.write(f"Total cost of this conversation: ${st.session_state['total_cost']:.5f}")
