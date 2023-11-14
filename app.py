@@ -34,11 +34,12 @@ if "retry_error" not in st.session_state:
 st.set_page_config(page_title="Asistente")
 
 st.markdown('<div id="logoth" style="z-index: 9999999; background: url(https://thevalley.es/lms/i/logow.png);  width: 200px;  height: 37px;  position: fixed;  background-repeat: no-repeat;  background-size: auto 100%;  top: 1em;  left: 1em;"></div>', unsafe_allow_html=True)
-st.markdown('<style>.tab-list {   position: fixed; top: 0.5em;   left: 13em;   z-index: 9999999; }</style>', unsafe_allow_html=True)
 
 #st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
 
 tab1, tab2 = st.tabs(["Conversación", "Sube un fichero"])
+
+st.markdown('<style>.tab-list {   position: fixed !important; top: 0.5em;   left: 13em;   z-index: 9999999; }</style>', unsafe_allow_html=True)
 
 # Initialize session state for the uploader key
 if 'uploader_key' not in st.session_state:
