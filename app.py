@@ -53,10 +53,7 @@ if uploaded_file is not None:
         st.session_state.file_id = file_response.id
         st.success(f"File uploaded successfully to OpenAI! File ID: {file_response.id}")
 
-        # Optional: Display and Download JSON
-        st.text_area("JSON Output", json_str, height=300)
-        st.download_button(label="Download JSON", data=json_str, file_name="converted.json", mime="application/json")
-    
+       
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
