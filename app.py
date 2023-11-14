@@ -171,11 +171,7 @@ if prompt := st.chat_input("How can I help you?"):
 # Handle run status
 if hasattr(st.session_state.run, 'status'):
     if st.session_state.run.status == "queued":
-        with st.chat_message('assistant'):
-            st.write("Thinking ......")
-        if st.session_state.retry_error < 3:
-            time.sleep(1)
-            st.rerun()
+         st.write("Thinking ......")
 
     elif st.session_state.run.status == "failed":
         st.session_state.retry_error += 1
