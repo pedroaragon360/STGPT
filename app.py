@@ -45,15 +45,10 @@ if uploaded_file is not None:
     file_type = uploaded_file.type
 
     try:
-        # Read the file into a Pandas DataFrame
-        # Read the file content
-        file_content = uploaded_file.read().decode("utf-8")
-        file_stream = io.BytesIO(file_content.encode())
-        
-
-        # Upload JSON data to OpenAI and store the file ID
+        file_stream = uploaded_file.getvalue()
         file_response = client.files.create(file=file_stream, purpose='assistants')
         st.session_state.file_id = file_response.id
+
         st.sidebar.success(f"File uploaded successfully to OpenAI! File ID: {file_response.id}")
         # Determine MIME type
         mime_type, _ = mimetypes.guess_type(uploaded_file.name)
