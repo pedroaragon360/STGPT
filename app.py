@@ -80,7 +80,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                     if hasattr(content_part, 'text') and content_part.text:
                         message_text = content_part.text.value
                         st.markdown(message_text)
-                        st.write("Msg:", message)
+                        #st.write("Msg:", message)
 
                         # Check for and display image from annotations
                         if content_part.text.annotations:
@@ -91,13 +91,14 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                     response = client.files.with_raw_response.retrieve_content(file_id)
                                     if response.status_code == 200:
                                         # Display the image
-                                        st.write("Img on text:")
-                                        st.image(response.content)
-                                         # Convert the image bytes to a base64 string
+                                        #st.write("Img on text:")
+                                        #st.image(response.content)
+                                         # Convert the image bytes to
+                                        a base64 string
                                         b64_image = base64.b64encode(response.content).decode()
                                         
                                         # Create a download button
-                                        href = f'<a href="data:file/png;base64,{b64_image}" download="downloaded_image.png">Download Image</a>'
+                                        href = f'<a href="data:file/png;base64,{b64_image}" download="downloaded_image.png">Descargar imagen</a>'
                                         st.markdown(href, unsafe_allow_html=True)
 
                                     else:
@@ -114,7 +115,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                         response = client.files.with_raw_response.retrieve_content(image_file_id)
                         if response.status_code == 200:
                             # Display the image
-                            st.write("Direct image file:")
+                            #st.write("Direct image file:")
                             st.image(response.content)
                         else:
                             st.error("Failed to retrieve image")
