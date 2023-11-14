@@ -5,6 +5,7 @@ import uuid
 import time
 import pandas as pd
 import io
+import re
 import base64
 from openai import OpenAI
 import mimetypes
@@ -94,6 +95,8 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                     # Handle text content
                     if hasattr(content_part, 'text') and content_part.text:
                         message_text = content_part.text.value
+                        pattern = r'\[.*?\]\(sandbox:.*?\)'
+                        message_text = re.sub(pattern, '', message_text)
                         st.markdown(message_text)
                         #st.write("Msg:", message)
 
