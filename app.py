@@ -53,8 +53,19 @@ if uploaded_file is not None:
         file_response = client.files.create(file=file_stream, purpose='assistants')
         st.sidebar.session_state.file_id = file_response.id
         st.sidebar.success(f"File uploaded successfully to OpenAI! File ID: {file_response.id}")
-
-       
+        # Determine MIME type
+        mime_type, _ = mimetypes.guess_type(uploaded_file.name)
+        if mime_type is None:
+            mime_type = "application/octet-stream"  # Default for unknown types
+    
+        # Create download button
+        st.sidebar.download_button(
+            label="Descargar fichero subido",
+            data=file_content,
+            file_name=uploaded_file.name,
+            mime=mime_type
+        )
+           
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
