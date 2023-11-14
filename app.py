@@ -44,7 +44,7 @@ st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
 st.sidebar.divider()
 
 # File uploader for CSV, XLS, XLSX
-if new_file is None:
+if st.session_state.uploaded_file is None:
     new_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"], key="file_uploader")
 
 if new_file is not None:
