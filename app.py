@@ -156,7 +156,7 @@ if prompt := st.chat_input("How can I help you?"):
     prompt_raw=prompt
     prompt = prompt.replace("\n", "\n\n")
     if "file_id" in st.session_state and "file_name" in st.session_state:
-        prompt = "Renombra el archivo " + str(st.session_state.file_id) + " por " + str(st.session_state.file_name) + ". " + prompt
+        prompt_raw = "Renombra el archivo " + str(st.session_state.file_id) + " por " + str(st.session_state.file_name) + ". " + prompt_raw
     message_data = {
         "thread_id": st.session_state.thread.id,
         "role": "user",
