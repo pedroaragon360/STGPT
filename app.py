@@ -120,7 +120,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                         filename = file_name.split('/')[-1]
                                     
                                         # Create a download button with the correct MIME type and filename
-                                        href = f'<a style="border: 1px solid white;" href="data:{mime_type};base64,{b64_image}" download="{filename}">Descargar archivo</a>'
+                                        href = f'<a style="border: 1px solid white;background: white; color: black; padding: 0.4em 0.8em; border-radius: 1em;" href="data:{mime_type};base64,{b64_image}" download="{filename}">Descargar {filename}</a>'
                                         st.markdown(href, unsafe_allow_html=True)
                                     else:
                                         st.error("Failed to retrieve file")
