@@ -40,9 +40,7 @@ st.sidebar.markdown("Analiza un archivo de datos:")
 # Initialize session state for the uploader key
 if 'uploader_key' not in st.session_state:
     st.session_state.uploader_key = 0
-with st.spinner(text='In progress'):
-    time.sleep(30)
-    st.success('Done')
+
 # File uploader for CSV, XLS, XLSX
 uploaded_file = st.sidebar.file_uploader("", type=["csv", "xls", "json"], key=f'file_uploader_{st.session_state.uploader_key}')
 
@@ -161,11 +159,12 @@ if prompt := st.chat_input("How can I help you?"):
     
     st.session_state.messages = client.beta.threads.messages.create(**message_data)
 
-    st.session_state.run = client.beta.threads.runs.create(
-        thread_id=st.session_state.thread.id,
-        assistant_id=st.session_state.assistant.id,
-    )
-    st.write(st.session_state.run.status)
+    with st.spinner(text='In progress'):
+        st.session_state.run = client.beta.threads.runs.create(
+            thread_id=st.session_state.thread.id,
+            assistant_id=st.session_state.assistant.id,
+        )
+
     if st.session_state.retry_error < 3:
         time.sleep(1)
         st.rerun()
