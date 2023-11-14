@@ -106,6 +106,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                             message_text = content_part.text.value
                             pattern = r'\[.*?\]\(sandbox:.*?\)'
                             message_text = re.sub(pattern, '', message_text)
+                            message_text = message_text.replace("\n", "<br>")
                             st.markdown(message_text)
                             #st.write("Msg:", message)
     
