@@ -40,7 +40,7 @@ st.sidebar.divider()
 
 # File uploader for CSV, XLS, XLSX
 
- st.session_state.uploaded_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"])
+st.session_state.uploaded_file = st.sidebar.file_uploader("Subir fichero", type=["csv", "xls", "json"])
 
 if st.session_state.uploaded_file is not None:
     if "file_processed" not in st.session_state or not st.session_state.file_processed:
