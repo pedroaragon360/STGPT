@@ -182,8 +182,9 @@ if prompt := st.chat_input("How can I help you?"):
 
 # Handle run status
 if hasattr(st.session_state.run, 'status'):
-    st.snow()
-    if st.session_state.run.status == "running":
+    if st.session_state.run.status == "queued":
+        st.snow()
+    elif st.session_state.run.status == "running":
         with tab1:
             with st.chat_message('assistant'):
                 st.write("Thinking ......")
