@@ -5,6 +5,7 @@ import uuid
 import time
 import pandas as pd
 import io
+import base64  # Import base64 module
 from openai import OpenAI
 
 # Initialize OpenAI client
