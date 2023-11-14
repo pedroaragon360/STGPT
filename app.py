@@ -172,10 +172,10 @@ if prompt := st.chat_input("How can I help you?"):
 # Handle run status
 if hasattr(st.session_state.run, 'status'):
     
-        # Show a loading spinner while processing
-        if st.session_state.retry_error < 3:
-            st.session_state.retry_error += 1
-            st.experimental_rerun()
+    # Show a loading spinner while processing
+    if st.session_state.retry_error < 3:
+        st.session_state.retry_error += 1
+        st.experimental_rerun()
     elif st.session_state.run.status == "failed":
         st.session_state.retry_error += 1
         with st.chat_message('assistant'):
