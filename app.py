@@ -189,8 +189,6 @@ if hasattr(st.session_state.run, 'status'):
             if st.session_state.retry_error < 3:
                 time.sleep(1)
                 st.rerun()
-    elif st.session_state.run.status == "queued":
-        st.snow()
     elif st.session_state.run.status == "failed":
         st.session_state.retry_error += 1
         with st.chat_message('assistant'):
