@@ -103,6 +103,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                 with st.chat_message(message.role):
     
                     for content_part in message.content:
+                        st.write(message)
                         # Handle text content
                         if hasattr(content_part, 'text') and content_part.text:
                             message_text = content_part.text.value
