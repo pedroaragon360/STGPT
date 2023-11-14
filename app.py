@@ -81,7 +81,6 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
         if message.role in ["user", "assistant"]:
             with st.chat_message(message.role):
 
-                print("API Response:", st.session_state.messages)
                 for content_part in message.content:
                     # Handle text content
                     if hasattr(content_part, 'text') and content_part.text:
@@ -96,18 +95,17 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                     file_id = annotation.file_path.file_id
                                     # Retrieve the image content
                                     image_content = client.files.content(file_id=file_id)
-                                    st.write("IMG API 2 Response:", image_content)
-                                    try:
-                                        # Attempt to decode as base64
-                                        decoded_content = base64.b64decode(image_content)
-                                        st.write("Content is base64 encoded.")
-                                    except (binascii.Error, ValueError):
-                                        st.write("Content is not base64 encoded.")
+                                    st.write("IMG API 2 Response:", image_content,"-fin-")
                                     
                     # Handle direct image content
-                    elif hasattr(content_part, 'image') and content_part.image:
+                    if hasattr(content_part, 'image') and content_part.image:
                         image_url = content_part.image.url
                         st.write("IMG API Response:", content_part.image)
+                # Check for image file and retrieve the file ID
+                    if hasattr(content_part, 'image_file') and content_part.image_file:
+                        image_file_id = content_part.image_file.file_id
+                        st.write(f"Image File ID: {image_file_id}")
+
 
 # Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
