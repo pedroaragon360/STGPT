@@ -97,6 +97,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                                     response = client.files.with_raw_response.retrieve_content(file_id)
                                     if response.status_code == 200:
                                         # Display the image
+                                        st.write("Img on text:")
                                         st.image(response.content)
                                     else:
                                         st.error("Failed to retrieve image")
@@ -112,6 +113,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                         response = client.files.with_raw_response.retrieve_content(image_file_id)
                         if response.status_code == 200:
                             # Display the image
+                            st.write("Direct image file:")
                             st.image(response.content)
                         else:
                             st.error("Failed to retrieve image")
