@@ -95,8 +95,7 @@ if "assistant" not in st.session_state:
 # Display chat messages
 elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == "completed":
     with st.chat_message("assistant"):
-
-    run_steps = client.beta.threads.runs.steps.list(thread_id=st.session_state.thread.id,run_id=st.session_state.run.id  )
+        run_steps = client.beta.threads.runs.steps.list(thread_id=st.session_state.thread.id,run_id=st.session_state.run.id  )
         st.write(run_steps)
 
     st.session_state.messages = client.beta.threads.messages.list(
