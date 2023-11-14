@@ -139,58 +139,38 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
                         else:
                             st.error("Failed to retrieve image")
 
-# Chat input and message creation with file ID
-if prompt := st.chat_input("How can I help you?"):
 
+
+if prompt := st.chat_input("What is up?"):
+
+    
     if "file_id" in st.session_state and "file_name" in st.session_state:
         prompt = "Renombra el archivo " + str(st.session_state.file_id) + " por " + str(st.session_state.file_name) + ". " + prompt
-    message_data = {
-        "thread_id": st.session_state.thread.id,
-        "role": "user",
-        "content": prompt
-    }
-    with st.chat_message('user'):
-        st.write(prompt)
-        
+
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    
     # Include file ID in the request if available
     if "file_id" in st.session_state:
-        message_data["file_ids"] = [st.session_state.file_id]
+        st.session_state.messages.file_ids = [st.session_state.file_id]
         st.session_state.pop('file_id')
-    
-    st.session_state.messages = client.beta.threads.messages.create(**message_data)
+        
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
-    st.session_state.run = client.beta.threads.runs.create(
-        thread_id=st.session_state.thread.id,
-        assistant_id=st.session_state.assistant.id,
-    )
-
-    if st.session_state.retry_error < 3:
-        time.sleep(1)
-        st.rerun()
-
-# Handle run status
-# Handle run status
-if hasattr(st.session_state.run, 'status'):
-    
-    # Show a loading spinner while processing
-    if st.session_state.retry_error < 3:
-        st.session_state.retry_error += 1
-        st.experimental_rerun()
-    elif st.session_state.run.status == "failed":
-        st.session_state.retry_error += 1
-        with st.chat_message('assistant'):
-            if st.session_state.retry_error < 3:
-                st.write("Run failed, retrying ......")
-                st.experimental_rerun()
-            else:
-                st.error("FAILED: The OpenAI API is currently processing too many requests. Please try again later ......")
-    elif st.session_state.run.status != "completed":
-        with st.sidebar.spinner(text='In progress'):
-            st.session_state.run = client.beta.threads.runs.retrieve(
-                thread_id=st.session_state.thread.id,
-                run_id=st.session_state.run.id,
-            )
-            if st.session_state.retry_error < 3:
-                st.experimental_rerun()
+    with st.chat_message("assistant"):
+        message_placeholder = st.empty()
+        full_response = ""
+        for response in openai.ChatCompletion.create(
+            model=st.session_state["openai_model"],
+            messages=[
+                {"role": m["role"], "content": m["content"]}
+                for m in st.session_state.messages
+            ],
+            stream=True,
+        ):
+            full_response += response.choices[0].delta.get("content", "")
+            message_placeholder.markdown(full_response + "▌")
+        message_placeholder.markdown(full_response)
+    st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 
