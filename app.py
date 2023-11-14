@@ -159,11 +159,10 @@ if prompt := st.chat_input("How can I help you?"):
     
     st.session_state.messages = client.beta.threads.messages.create(**message_data)
 
-    with st.spinner(text='In progress'):
-        st.session_state.run = client.beta.threads.runs.create(
-            thread_id=st.session_state.thread.id,
-            assistant_id=st.session_state.assistant.id,
-        )
+    st.session_state.run = client.beta.threads.runs.create(
+        thread_id=st.session_state.thread.id,
+        assistant_id=st.session_state.assistant.id,
+    )
 
     if st.session_state.retry_error < 3:
         time.sleep(1)
@@ -172,9 +171,10 @@ if prompt := st.chat_input("How can I help you?"):
 # Handle run status
 # Handle run status
 if hasattr(st.session_state.run, 'status'):
+    
     if st.session_state.run.status == "running":
         # Show a loading spinner while processing
-        with st.spinner('Processing... Please wait.'):
+        with st.sidebar.spinner('Processing... Please wait.'):
             if st.session_state.retry_error < 3:
                 st.session_state.retry_error += 1
                 st.experimental_rerun()
