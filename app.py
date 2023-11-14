@@ -168,38 +168,4 @@ if prompt := st.chat_input("How can I help you?"):
         time.sleep(1)
         st.rerun()
 
-# Handle run status
-# Create a placeholder for the assistant's response
-if "assistant_placeholder" not in st.session_state:
-    st.session_state.assistant_placeholder = st.empty()
 
-# Handle run status
-if hasattr(st.session_state.run, 'status'):
-    if st.session_state.run.status == "queued":
-        with st.session_state.assistant_placeholder.container():
-            st.chat_message('assistant')
-            st.write("Thinking ......")
-
-        if st.session_state.retry_error < 3:
-            # Use a non-blocking way to wait and then rerun
-            st.session_state.retry_error += 1
-            st.experimental_rerun()
-            
-    elif st.session_state.run.status == "failed":
-        st.session_state.retry_error += 1
-        with st.chat_message('assistant'):
-            if st.session_state.retry_error < 3:
-                st.write("Run failed, retrying ......")
-                time.sleep(3)
-                st.rerun()
-            else:
-                st.error("FAILED: The OpenAI API is currently processing too many requests. Please try again later ......")
-
-    elif st.session_state.run.status != "completed":
-        st.session_state.run = client.beta.threads.runs.retrieve(
-            thread_id=st.session_state.thread.id,
-            run_id=st.session_state.run.id,
-        )
-        if st.session_state.retry_error < 3:
-            time.sleep(3)
-            st.rerun()
