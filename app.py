@@ -36,7 +36,7 @@ st.sidebar.markdown("Asistente GPT")
 st.sidebar.divider()
 
 # File uploader for CSV, XLS, XLSX
-uploaded_file = st.file_uploader("Upload your file", type=["csv", "xls", "xlsx"])
+uploaded_file = st.sidebar.file_uploader("Upload your file", type=["csv", "xls", "xlsx"])
 
 if uploaded_file is not None:
     # Determine the file type
@@ -51,8 +51,8 @@ if uploaded_file is not None:
 
         # Upload JSON data to OpenAI and store the file ID
         file_response = client.files.create(file=file_stream, purpose='assistants')
-        st.session_state.file_id = file_response.id
-        st.success(f"File uploaded successfully to OpenAI! File ID: {file_response.id}")
+        st.sidebar.session_state.file_id = file_response.id
+        st.sidebar.success(f"File uploaded successfully to OpenAI! File ID: {file_response.id}")
 
        
     except Exception as e:
