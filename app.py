@@ -73,8 +73,8 @@ if st.session_state.uploaded_file is not None:
                 mime=mime_type
             )
            
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
 
 # Initialize OpenAI assistant
 if "assistant" not in st.session_state:
