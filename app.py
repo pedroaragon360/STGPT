@@ -51,6 +51,6 @@ prompt = st.chat_input("Say something to the bot")
 
 if prompt:
     messages = get_response(prompt)
-    for m in messages.data:
+    for m in reversed(messages.data):
         st.write(m.content[0].text.value)
 #    st.write(messages.data[0].content[0].text.value)
