@@ -52,40 +52,42 @@ with tab1:
 # Initialize OpenAI assistant
 if "assistant" not in st.session_state:
     openai.api_key = st.secrets["OPENAI_API_KEY"]
-    st.session_state.assistant = openai.beta.assistants.retrieve(st.secrets["OPENAI_ASSISTANT"])
+    assistant = openai.beta.assistants.retrieve(st.secrets["OPENAI_ASSISTANT"])
+    st.session_state.assistant = assistant
     st.session_state.thread = client.beta.threads.create(
         metadata={'session_id': st.session_state.session_id}
     )
 
-# Display chat messages
-elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == "completed":
+if "thread_id" not in st.session_state:
+    thread = client.beta.threads.create()
+    st.session_state["thread_id"] = thread.id
+else:
+    thread = client.beta.threads.retrieve(st.session_state["thread_id"])
 
-    st.session_state.messages = client.beta.threads.messages.list(
-        thread_id=st.session_state.thread.id
+def get_response(prompt: str):
+    message = client.beta.threads.messages.create(
+        thread.id, role="user", content=prompt
     )
-    for message in reversed(st.session_state.messages.data):
-        if message.role in ["user", "assistant"]:
-            with tab1:
-                with st.chat_message(message.role):
-                    for content_part in message.content:                                    
-                    #if steps.tools[0].type == 'code_interpreter':
-                        # Handle text content
-                        if hasattr(content_part, 'text') and content_part.text:
-                            message_text = content_part.text.value
-                            st.markdown(message_text)
+    run = client.beta.threads.runs.create(
+        thread_id=st.session_state.thread.id,
+        assistant_id=st.session_state.assistant.id
+    )
 
-# Chat input and message creation with file ID
-if prompt := st.chat_input("How can I help you?"):
-    message_data = {
-        "thread_id": st.session_state.thread.id,
-        "role": "user",
-        "content": prompt
-    }
-    with tab1:
-        with st.chat_message('user'):
-            st.markdown(prompt)
-        
-    st.session_state.messages = client.beta.threads.messages.create(**message_data)
+    with st.spinner("Running assistant..."):
+        while run.status != "completed":
+            run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
+            st.toast(f"Run status: {run.status}", icon="hourglass")
+            time.sleep(1)
 
-    st.write('<img src="https://thevalley.es/lms/i/load.gif" height="28px"> Pensando...' if st.session_state.run.status == 'queued' else '', unsafe_allow_html=True)
+    messages = client.beta.threads.messages.list(thread.id)
+    return messages
+
+
+prompt = st.chat_input("Say something to the bot")
+
+if prompt:
+    messages = get_response(prompt)
+    for m in messages.data:
+        print(m)
+    st.write(messages.data[0].content[0].text.value)
 
