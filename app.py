@@ -14,65 +14,67 @@ import mimetypes
 # Initialize OpenAI client
 client = OpenAI()
 
-# Your chosen model
-MODEL = "gpt-4-1106-preview"
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-# Initialize session state variables
-if "session_id" not in st.session_state:
-    st.session_state.session_id = str(uuid.uuid4())
+if "assistant_id" not in st.session_state:
+    assistant = client.beta.assistants.retrieve(st.secrets["OPENAI_ASSISTANT"])
 
-if "run" not in st.session_state:
-    st.session_state.run = {"status": None}
-
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-if "retry_error" not in st.session_state:
-    st.session_state.retry_error = 0
-
-# Set up the page
-st.set_page_config(page_title="Asistente")
-
-st.markdown('<div id="logoth" style="z-index: 9999999; background: url(https://thevalley.es/lms/i/logow.png);  width: 200px;  height: 27px;  position: fixed;  background-repeat: no-repeat;  background-size: auto 100%;  top: 1.1em;  left: 1em;"></div>', unsafe_allow_html=True)
-
-#st.sidebar.markdown("Por Pedro Aragón", unsafe_allow_html=True)
-
-tab1, tab2 = st.tabs(["Conversación", "Sube un fichero"])
-
-st.markdown('<style>[data-baseweb=tab-list] {   position: fixed !important; top: 0.5em;   left: 11em;   z-index: 9999999; } [data-testid=stToolbar]{ top:-10em } </style>', unsafe_allow_html=True)
-
-# Initialize session state for the uploader key
-if 'uploader_key' not in st.session_state:
-    st.session_state.uploader_key = 0
-
-with tab1:
-    with st.chat_message('assistant'):
-        st.write('¡Hola! Soy el asistente GPT de The Valley, ¿cómo te puedo ayudar?')
-
-# Initialize OpenAI assistant
-if "assistant" not in st.session_state:
-    openai.api_key = st.secrets["OPENAI_API_KEY"]
-    assistant = openai.beta.assistants.retrieve(st.secrets["OPENAI_ASSISTANT"])
-    st.session_state.assistant = assistant
-
-st.write(st.session_state.assistant)
 
 if "thread_id" not in st.session_state:
     thread = client.beta.threads.create()
-    st.session_state.thread_id = thread.id
+    st.session_state["thread_id"] = thread.id
 else:
     thread = client.beta.threads.retrieve(st.session_state["thread_id"])
-st.write(thread)
+
+
+def ts_to_str(ts):
+    return datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def gen_file_name(f):
+    return f"{f.filename} ({ts_to_str(f.created_at)}: {f.id})"
+
+
+select_file_tab, upload_file_tab = st.columns(2)
+
+with select_file_tab:
+    uploaded_files = client.files.list(purpose="assistants")
+    selected_files = st.multiselect(
+        "Select uploaded files", [gen_file_name(f) for f in uploaded_files]
+    )
+
+with upload_file_tab:
+    uploaded_file = st.file_uploader("Upload a file", type=["txt", "pdf", "docx", "md"])
+    if uploaded_file is not None:
+        st.info("File uploaded successfully, now parsing...")
+        file = client.files.create(file=uploaded_file, purpose="assistants")
+        st.info(
+            f"File parsed successfully, file id is {file.id}. now creating assistant..."
+        )
+
+
+if not uploaded_file and not selected_files:
+    st.error("Please upload a file or select a file to continue")
+    st.stop()
+file_ids = [f.id for f in uploaded_files if gen_file_name(f) in selected_files]
+if uploaded_file:
+    file_ids.append(file.id)
+print(selected_files, file_ids)
+
 
 def get_response(prompt: str):
+    client.beta.assistants.update(
+        assistant_id=assistant.id,
+        file_ids=file_ids,
+    )
     message = client.beta.threads.messages.create(
         thread.id, role="user", content=prompt
     )
     run = client.beta.threads.runs.create(
-        thread_id=st.session_state.thread.id,
-        assistant_id=st.session_state.assistant.id
+        thread_id=thread.id,
+        assistant_id=assistant.id,
+        instructions="Please address the user as Jane Doe. The user has a premium account.",
     )
-    st.write(run)
 
     with st.spinner("Running assistant..."):
         while run.status != "completed":
@@ -91,4 +93,3 @@ if prompt:
     for m in messages.data:
         print(m)
     st.write(messages.data[0].content[0].text.value)
-
