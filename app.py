@@ -87,41 +87,5 @@ if prompt := st.chat_input("How can I help you?"):
         
     st.session_state.messages = client.beta.threads.messages.create(**message_data)
 
-    st.session_state.run = client.beta.threads.runs.create(
-        thread_id=st.session_state.thread.id,
-        assistant_id=st.session_state.assistant.id,
-    )
     #st.write('<img src="https://thevalley.es/lms/i/load.gif" height="28px"> Pensando...' if st.session_state.run.status == 'queued' else '', unsafe_allow_html=True)
 
-    if st.session_state.retry_error < 3:
-        time.sleep(1)
-        st.rerun()
-
-# Handle run status
-if hasattr(st.session_state.run, 'status'):
-    
-    if st.session_state.run.status == "running":
-        st.write("Thinking ......")
-        if st.session_state.retry_error < 3:
-            time.sleep(1)
-            st.rerun()
-    elif st.session_state.run.status == "failed":
-        st.session_state.retry_error += 1
-        with st.chat_message('assistant'):
-            if hasattr(st.session_state.run, 'last_error'):
-                st.write("Atención: " + st.session_state.run.last_error.message)
-            if st.session_state.retry_error < 3:
-                st.write("Intentándolo de nuevo ......")
-                time.sleep(3)
-                st.rerun()
-            else:
-                st.error("Lo sentimos, no se ha podido procesar: " + st.session_state.run.last_error.message)
-
-    elif st.session_state.run.status != "completed":
-        st.session_state.run = client.beta.threads.runs.retrieve(
-            thread_id=st.session_state.thread.id,
-            run_id=st.session_state.run.id,
-        )
-        if st.session_state.retry_error < 3:
-            time.sleep(3)
-            st.rerun()
