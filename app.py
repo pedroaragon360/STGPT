@@ -76,7 +76,7 @@ elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == 
 
 # Chat input and message creation with file ID
 if prompt := st.chat_input("How can I help you?"):
-       message_data = {
+    message_data = {
         "thread_id": st.session_state.thread.id,
         "role": "user",
         "content": prompt
