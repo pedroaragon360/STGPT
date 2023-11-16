@@ -87,5 +87,5 @@ if prompt := st.chat_input("How can I help you?"):
         
     st.session_state.messages = client.beta.threads.messages.create(**message_data)
 
-    #st.write('<img src="https://thevalley.es/lms/i/load.gif" height="28px"> Pensando...' if st.session_state.run.status == 'queued' else '', unsafe_allow_html=True)
+    st.write('<img src="https://thevalley.es/lms/i/load.gif" height="28px"> Pensando...' if st.session_state.run.status == 'queued' else '', unsafe_allow_html=True)
 
