@@ -55,7 +55,7 @@ if "assistant" not in st.session_state:
     assistant = openai.beta.assistants.retrieve(st.secrets["OPENAI_ASSISTANT"])
     st.session_state.assistant = assistant
 
-st.write(assistant)
+st.write(st.session_state.assistant)
 
 if "thread_id" not in st.session_state:
     thread = client.beta.threads.create()
