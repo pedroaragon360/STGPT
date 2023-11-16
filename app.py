@@ -54,15 +54,15 @@ if "assistant" not in st.session_state:
     openai.api_key = st.secrets["OPENAI_API_KEY"]
     assistant = openai.beta.assistants.retrieve(st.secrets["OPENAI_ASSISTANT"])
     st.session_state.assistant = assistant
-    st.session_state.thread = client.beta.threads.create(
-        metadata={'session_id': st.session_state.session_id}
-    )
+
+st.write(assistant)
 
 if "thread_id" not in st.session_state:
     thread = client.beta.threads.create()
-    st.session_state["thread_id"] = thread.id
+    st.session_state.thread_id = thread.id
 else:
     thread = client.beta.threads.retrieve(st.session_state["thread_id"])
+st.write(thread)
 
 def get_response(prompt: str):
     message = client.beta.threads.messages.create(
@@ -72,6 +72,7 @@ def get_response(prompt: str):
         thread_id=st.session_state.thread.id,
         assistant_id=st.session_state.assistant.id
     )
+    st.write(run)
 
     with st.spinner("Running assistant..."):
         while run.status != "completed":
