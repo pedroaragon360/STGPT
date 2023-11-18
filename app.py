@@ -27,9 +27,10 @@ else:
     thread = client.beta.threads.retrieve(st.session_state["thread_id"])
 
 
-def render_responses(threadid):
+def render_responses(threadid,prompt):
     messages = client.beta.threads.messages.list(threadid)
-    messages.data.append({"content": [{"text": {"value": "no encontrará..."}}]})
+    if prompt:
+        messages.data.append({"content": [{"text": {"value": prompt}}]})
     return messages
 
 def get_response(prompt: str):
@@ -47,7 +48,7 @@ def get_response(prompt: str):
             st.toast(f"Run status: {run.status}")
             time.sleep(1)
     
-    messages = render_responses(thread.id)
+    messages = render_responses(thread.id, prompt)
 
     return messages
 
