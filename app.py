@@ -43,6 +43,9 @@ def get_response(prompt: str):
             run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
             st.toast(f"Run status: {run.status}")
             time.sleep(1)
+    
+    messages = client.beta.threads.messages.list(thread.id)
+
     return messages
 
 
