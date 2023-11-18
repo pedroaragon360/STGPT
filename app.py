@@ -19,7 +19,9 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 if "assistant_id" not in st.session_state:
     assistant = client.beta.assistants.retrieve(st.secrets["OPENAI_ASSISTANT"])
 
-
+if "messages" not in st.session_state:
+    messages = {}
+    
 if "thread_id" not in st.session_state:
     thread = client.beta.threads.create()
     st.session_state["thread_id"] = thread.id
@@ -59,5 +61,5 @@ prompt = st.chat_input("Say something to the bot (nice) 2f  - fff")
 if prompt:
     messages = get_response(prompt)
     for m in reversed(messages.data):
-        st.write(content_item['text']['value'])
+        st.write(m.content[0].text.value)
 
