@@ -49,7 +49,7 @@ def get_response(prompt: str):
             time.sleep(1)
     
     # messages = render_responses(thread.id, prompt)
-    messages = client.beta.threads.messages.list(threadid)
+    messages = client.beta.threads.messages.list(thread.id)
 
     return messages
 
