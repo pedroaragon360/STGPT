@@ -47,8 +47,8 @@ def get_response(prompt: str):
     return messages
 
 
-prompt = st.chat_input("Say something to the bot")
-
+prompt = st.chat_input("Say something to the bot (nice) 2f - ")
+ 
 if prompt:
     messages = get_response(prompt)
     for m in reversed(messages.data):
