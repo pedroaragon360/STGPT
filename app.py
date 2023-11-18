@@ -52,8 +52,6 @@ def get_response(prompt: str):
     
     # messages = render_responses(thread.id, prompt)
     messages = client.beta.threads.messages.list(thread.id)
-    if run.status != "completed":
-        messages.data.append({"content": [{"text": {"value": prompt}}]})
 
     st.toast(f"RENDERIZAMOS")
     return messages
@@ -62,6 +60,9 @@ def get_response(prompt: str):
 prompt = st.chat_input("Say something to the bot (nice) 2f  - fff")
  
 if prompt:
+    if 'data' not in messages or not isinstance(messages['data'], list):
+        messages['data'] = []
+    messages['data'].append({"content": [{"text": {"value": prompt}}]})
     messages = get_response(prompt)
     for m in reversed(messages.data):
         st.write(m.content[0].text.value)
