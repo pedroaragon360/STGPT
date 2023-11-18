@@ -39,7 +39,6 @@ def get_response(prompt: str):
 
     with st.spinner("Running assistant..."):
         while run.status != "completed":
-            st.write(prompt)
             run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
             st.toast(f"Run status: {run.status}")
             time.sleep(1)
@@ -54,4 +53,6 @@ if prompt:
     messages = get_response(prompt)
     for m in reversed(messages.data):
         st.write(m.content[0].text.value)
+    while run.status != "completed":
+        st.write(prompt)
 #    st.write(messages.data[0].content[0].text.value)
