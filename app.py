@@ -29,6 +29,8 @@ else:
 
 def render_responses(threadid,prompt):
     messages = client.beta.threads.messages.list(threadid)
+    # if prompt:
+    #     messages.data.append({"content": [{"text": {"value": prompt}}]})
     return messages
 
 def get_response(prompt: str):
@@ -46,7 +48,8 @@ def get_response(prompt: str):
             st.toast(f"Run status: {run.status}")
             time.sleep(1)
     
-    messages = render_responses(thread.id, prompt)
+    # messages = render_responses(thread.id, prompt)
+    messages = client.beta.threads.messages.list(threadid)
 
     return messages
 
