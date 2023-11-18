@@ -29,8 +29,6 @@ else:
 
 def render_responses(threadid,prompt):
     messages = client.beta.threads.messages.list(threadid)
-    if prompt:
-        messages.data.append({"content": [{"text": {"value": prompt}}]})
     return messages
 
 def get_response(prompt: str):
