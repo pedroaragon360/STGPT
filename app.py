@@ -36,10 +36,13 @@ def get_response(prompt: str):
         thread_id=thread.id,
         assistant_id=assistant.id
     )
-    
-
 
     messages = client.beta.threads.messages.list(thread.id)
+    with st.spinner("Running assistant..."):
+        while run.status != "completed":
+            run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
+            st.toast(f"Run status: {run.status}")
+            time.sleep(1)
     return messages
 
 
