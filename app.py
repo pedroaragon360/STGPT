@@ -54,6 +54,5 @@ if prompt:
     messages = get_response(prompt)
     for m in reversed(messages.data):
         st.write(m.content[0].text.value)
-    while st.session_state.run != "completed":
-        st.write(prompt)
+
 #    st.write(messages.data[0].content[0].text.value)
