@@ -52,6 +52,8 @@ def get_response(prompt: str):
     
     # messages = render_responses(thread.id, prompt)
     messages = client.beta.threads.messages.list(thread.id)
+    if run.status != "completed":
+        messages.data.append({"content": [{"text": {"value": prompt}}]})
 
     return messages
 
