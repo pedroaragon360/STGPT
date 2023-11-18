@@ -47,7 +47,7 @@ def get_response(prompt: str):
             st.toast(f"Run status: {run.status}")
             time.sleep(1)
     
-    messages = render_responses(threadid)
+    messages = render_responses(thread.id)
 
     return messages
 
