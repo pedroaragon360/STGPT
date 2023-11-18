@@ -60,6 +60,7 @@ if prompt:
     messages = get_response(prompt)
     for m in reversed(messages.data):
         # Check if 'content' is in m and it is a non-empty list
+        st.write(m)
         if 'content' in m and isinstance(m['content'], list) and len(m['content']) > 0:
             # Now check the first item in the 'content' list
             content_item = m['content'][0]
