@@ -61,9 +61,9 @@ if prompt:
     for m in reversed(messages.data):
         # Check if 'content' is in m and it is a non-empty list
         st.write(m)
-        if 'content' in m and isinstance(m['content'], list) and len(m['content']) > 0:
+        if 'content' in m:
             # Now check the first item in the 'content' list
-            content_item = m['content'][0]
+            st.write("in")
             if 'text' in content_item and 'value' in content_item['text']:
                 st.write(content_item['text']['value'])
 #    st.write(messages.data[0].content[0].text.value)
