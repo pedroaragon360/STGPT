@@ -59,7 +59,7 @@ prompt = st.chat_input("Say something to the bot (nice) 2f  - fff")
 if prompt:
     messages = get_response(prompt)
     for m in reversed(messages.data):
-        if 'content' in m and 'text' in m.content[0] and 'value' in m.content[0]['text']:
+        if 'content' in m and 'text' in m.content[0] and 'value' in m.content[0].text:
             st.write(m.content[0].text.value)
 
 #    st.write(messages.data[0].content[0].text.value)
