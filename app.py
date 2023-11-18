@@ -60,9 +60,7 @@ def get_response(prompt: str):
 prompt = st.chat_input("Say something to the bot (nice) 2f  - fff")
  
 if prompt:
-    if 'data' not in messages or not isinstance(messages['data'], list):
-        messages['data'] = []
-    messages['data'].append({"content": [{"text": {"value": prompt}}]})
+    st.write(prompt)
     messages = get_response(prompt)
     for m in reversed(messages.data):
         st.write(m.content[0].text.value)
