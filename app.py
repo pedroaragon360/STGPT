@@ -59,11 +59,5 @@ prompt = st.chat_input("Say something to the bot (nice) 2f  - fff")
 if prompt:
     messages = get_response(prompt)
     for m in reversed(messages.data):
-        # Check if 'content' is in m and it is a non-empty list
-        st.write(m)
-        if 'content' in m:
-            # Now check the first item in the 'content' list
-            st.write("in")
-            if 'text' in content_item and 'value' in content_item['text']:
-                st.write(content_item['text']['value'])
-#    st.write(messages.data[0].content[0].text.value)
+        st.write(content_item['text']['value'])
+
