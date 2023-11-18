@@ -36,6 +36,7 @@ def get_response(prompt: str):
         thread_id=thread.id,
         assistant_id=assistant.id
     )
+    st.session_state.run = run
 
     with st.spinner("Running assistant..."):
         while run.status != "completed":
@@ -53,6 +54,6 @@ if prompt:
     messages = get_response(prompt)
     for m in reversed(messages.data):
         st.write(m.content[0].text.value)
-    while run.status != "completed":
+    while st.session_state.run != "completed":
         st.write(prompt)
 #    st.write(messages.data[0].content[0].text.value)
