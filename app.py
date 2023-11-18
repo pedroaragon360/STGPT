@@ -29,6 +29,7 @@ else:
 
 
 def get_response(prompt: str):
+    st.write(prompt)
     message = client.beta.threads.messages.create(
         thread.id, role="user", content=prompt
     )
