@@ -27,6 +27,10 @@ else:
     thread = client.beta.threads.retrieve(st.session_state["thread_id"])
 
 
+def render_responses(threadid):
+    messages = client.beta.threads.messages.list(threadid)
+    messages.data.append({"content": [{"text": {"value": prompt}}]})
+    return messages
 
 def get_response(prompt: str):
     message = client.beta.threads.messages.create(
@@ -37,14 +41,13 @@ def get_response(prompt: str):
         assistant_id=assistant.id
     )
 
-    messages.data.append({"content": [{"text": {"value": prompt}}]})
     with st.spinner("Running assistant..."):
         while run.status != "completed":
             run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
             st.toast(f"Run status: {run.status}")
             time.sleep(1)
     
-    messages = client.beta.threads.messages.list(thread.id)
+    messages = render_responses(threadid)
 
     return messages
 
