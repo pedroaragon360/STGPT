@@ -47,7 +47,7 @@ def get_response(prompt: str):
     return messages
 
 
-prompt = st.chat_input("Say something to the bot (nice) 2f  dd - ")
+prompt = st.chat_input("Say something to the bot (nice) 2f  - fff")
  
 if prompt:
     messages = get_response(prompt)
