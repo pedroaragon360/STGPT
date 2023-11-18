@@ -44,6 +44,9 @@ def get_response(prompt: str):
         assistant_id=assistant.id
     )
 
+    if run.status != "completed":
+        messages.data.append({"content": [{"text": {"value": prompt}}]})
+
     with st.spinner("Running assistant..."):
         while run.status != "completed":
             run = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
